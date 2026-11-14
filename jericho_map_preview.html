@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_acf5c8ec21eb53e8599823aaee7d3ec5 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_acf5c8ec21eb53e8599823aaee7d3ec5" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_acf5c8ec21eb53e8599823aaee7d3ec5 = L.map(
+                "map_acf5c8ec21eb53e8599823aaee7d3ec5",
+                {
+                    center: [31.9109978, 35.4558078],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 12,
+  "zoomControl": true,
+  "preferCanvas": false,
+  "scrollWheelZoom": true,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_acf5c8ec21eb53e8599823aaee7d3ec5);
+
+            
+
+        
+    
+            var tile_layer_64fc5ebfdf33358c7571fe366ada8a56 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            var tile_layer_cd97a1a39babd804d50ac270b89f7804 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            var tile_layer_e71150e399203d806721445b5ba5029f = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Tiles \u00a9 Esri; Sources: Esri, Maxar, Earthstar Geographics and contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e71150e399203d806721445b5ba5029f.addTo(map_acf5c8ec21eb53e8599823aaee7d3ec5);
+        
+    
+            var feature_group_437355a03d3a73f338d04942966ba9f1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_f83ab53c239e4aa51899943e6a337018 = L.marker(
+                [31.8713056, 35.4440556],
+                {
+}
+            ).addTo(feature_group_437355a03d3a73f338d04942966ba9f1);
+        
+    
+            var icon_212c112259fddae35055b94da0dd209b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d6e67e7f6a9ed5351299e34c6c321166 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a2f834d48d75300b6d9138d2bbf865d5 = $(`<div id="html_a2f834d48d75300b6d9138d2bbf865d5" style="width: 100.0%; height: 100.0%;"><strong>Tell es-Sultan (تل السلطان)</strong><br>Reference point only, not an agricultural boundary.<br>Source: <a href='https://whc.unesco.org/en/list/1687' target='_blank' rel='noopener'>UNESCO — Tell es-Sultan</a></div>`)[0];
+                popup_d6e67e7f6a9ed5351299e34c6c321166.setContent(html_a2f834d48d75300b6d9138d2bbf865d5);
+            
+        
+
+        marker_f83ab53c239e4aa51899943e6a337018.bindPopup(popup_d6e67e7f6a9ed5351299e34c6c321166)
+        ;
+
+        
+    
+    
+            marker_f83ab53c239e4aa51899943e6a337018.bindTooltip(
+                `<div>
+                     Tell es-Sultan (تل السلطان)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f83ab53c239e4aa51899943e6a337018.setIcon(icon_212c112259fddae35055b94da0dd209b);
+            
+    
+            var marker_e6544e5f23e5212585d74f17369b9945 = L.marker(
+                [31.95069, 35.46756],
+                {
+}
+            ).addTo(feature_group_437355a03d3a73f338d04942966ba9f1);
+        
+    
+            var icon_31d938868a2cc7a5714b7722ba10279e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0e09c086a84d315b7bea8e4cd86c202d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0173b3abca4ee85c4c5a26da1a5c9428 = $(`<div id="html_0173b3abca4ee85c4c5a26da1a5c9428" style="width: 100.0%; height: 100.0%;"><strong>Al-Auja (العوجا)</strong><br>Reference point only, not an agricultural boundary.<br>Source: <a href='https://www.geonames.org/285112/al-awja.html' target='_blank' rel='noopener'>GeoNames — Al &#x27;Awja</a></div>`)[0];
+                popup_0e09c086a84d315b7bea8e4cd86c202d.setContent(html_0173b3abca4ee85c4c5a26da1a5c9428);
+            
+        
+
+        marker_e6544e5f23e5212585d74f17369b9945.bindPopup(popup_0e09c086a84d315b7bea8e4cd86c202d)
+        ;
+
+        
+    
+    
+            marker_e6544e5f23e5212585d74f17369b9945.bindTooltip(
+                `<div>
+                     Al-Auja (العوجا)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e6544e5f23e5212585d74f17369b9945.setIcon(icon_31d938868a2cc7a5714b7722ba10279e);
+            
+    
+            feature_group_437355a03d3a73f338d04942966ba9f1.addTo(map_acf5c8ec21eb53e8599823aaee7d3ec5);
+        
+    
+            var feature_group_cddd8b6231fea4893f39e608bf22b2f1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            feature_group_cddd8b6231fea4893f39e608bf22b2f1.addTo(map_acf5c8ec21eb53e8599823aaee7d3ec5);
+        
+    
+            map_acf5c8ec21eb53e8599823aaee7d3ec5.fitBounds(
+                [[31.8713056, 35.4440556], [31.95069, 35.46756]],
+                {"maxZoom": 13, "padding": [45, 45]}
+            );
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Fullscreen",
+  "titleCancel": "Exit fullscreen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_acf5c8ec21eb53e8599823aaee7d3ec5);
+        
+    
+            var measure_control_e09959b3773cc92020a13f1231406db9 = new L.Control.Measure(
+                {
+  "position": "topright",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "kilometers",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "hectares",
+});
+            map_acf5c8ec21eb53e8599823aaee7d3ec5.addControl(measure_control_e09959b3773cc92020a13f1231406db9);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_71188d661f91f9734d27e40b274f7009 = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " : ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 6,
+  "prefix": "Lat/Lon: ",
+}
+            );
+            mouse_position_71188d661f91f9734d27e40b274f7009.options["latFormatter"] =
+                undefined;
+            mouse_position_71188d661f91f9734d27e40b274f7009.options["lngFormatter"] =
+                undefined;
+            map_acf5c8ec21eb53e8599823aaee7d3ec5.addControl(mouse_position_71188d661f91f9734d27e40b274f7009);
+        
+    
+            var tile_layer_91f0fa24288018eb28a6fd32a8f9da19 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_9ca173abaf4b1a120bc5189e7510c1d3 = new L.Control.MiniMap(
+                tile_layer_91f0fa24288018eb28a6fd32a8f9da19,
+                {
+  "position": "bottomleft",
+  "width": 130,
+  "height": 110,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_acf5c8ec21eb53e8599823aaee7d3ec5.addControl(mini_map_9ca173abaf4b1a120bc5189e7510c1d3);
+        
+    
+            var layer_control_9f8bdf0c478bdd9a44faa91395245522_layers = {
+                base_layers : {
+                    "Streets (OSM)" : tile_layer_64fc5ebfdf33358c7571fe366ada8a56,
+                    "Light (CartoDB)" : tile_layer_cd97a1a39babd804d50ac270b89f7804,
+                    "Satellite imagery (Esri)" : tile_layer_e71150e399203d806721445b5ba5029f,
+                },
+                overlays :  {
+                    "Reference points \u2014 NOT study boundaries" : feature_group_437355a03d3a73f338d04942966ba9f1,
+                    "Study polygons \u2014 loaded GeoJSON" : feature_group_cddd8b6231fea4893f39e608bf22b2f1,
+                },
+            };
+            let layer_control_9f8bdf0c478bdd9a44faa91395245522 = L.control.layers(
+                layer_control_9f8bdf0c478bdd9a44faa91395245522_layers.base_layers,
+                layer_control_9f8bdf0c478bdd9a44faa91395245522_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_acf5c8ec21eb53e8599823aaee7d3ec5);
+
+        
+</script>
+</html>
