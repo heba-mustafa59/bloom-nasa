@@ -2,6 +2,9 @@
 import streamlit as st
 from modules.data_loader import load_datasets
 
+import pandas as pd
+from modules.map_view import render_map
+
 st.set_page_config(page_title="BLOOM — Beyond the Green", page_icon="🌱", layout="wide")
 st.title("🌱 BLOOM")
 st.caption("Beyond the Green · Jericho, Palestine · NASA Space Apps 2026")
@@ -14,8 +17,22 @@ if st.button("Start Investigation", type="primary"):
     st.session_state.started = True
 
 if st.session_state.started:
-    ndvi_df, rain_df, areas, metadata = load_datasets()
+    ndvi_df, rainfall_df, areas, metadata = load_datasets()
     st.subheader("Case 001 — Jericho")
+        selected_area_id = st.radio(
+        "Choose study area",
+        ["area_a", "area_b"],
+        format_func=lambda x: "Area A" if x == "area_a" else "Area B",
+        horizontal=True,
+    )
+
+    render_map(
+        areas,
+        selected_area_id,
+        ndvi_df=ndvi_df,
+        rainfall_df=rain_df,
+        metadata=metadata,
+    )
     ready = not ndvi_df.empty and not rain_df.empty and bool(areas.get("features"))
     if not ready:
         st.warning("Project setup is ready; verified NASA datasets and study polygons have not yet been imported. No scientific results are available.")
