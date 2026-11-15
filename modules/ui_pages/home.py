@@ -104,7 +104,7 @@ def render(ctx, navigate):
                     if ctx.is_demo else
                     "PROVENANCE PENDING"
                     if ctx.is_provisional else
-                    "VERIFIED OBSERVATIONS"
+                    "STRICT NASA VERIFICATION"
                 )
                 st.html(
                     '<div class="bloom-hero-panel-head">'
