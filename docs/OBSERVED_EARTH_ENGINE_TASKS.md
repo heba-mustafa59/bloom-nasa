@@ -72,13 +72,33 @@ A new user-provided Earth Engine **Tasks** screenshot shows all three `BLOOM_REC
 
 **Next action:** From each completed task select **Open in Drive**; download only the three new outputs from `BLOOM_EE_RECHECK_2026` to a separate local folder `~/Desktop/bloom_ee_rerun`. Run `python scripts/validate_science.py --original-dir "$HOME/Desktop/bloom_ee_rerun" --report "$HOME/Desktop/BLOOM_reproduction_result.md" --json "$HOME/Desktop/BLOOM_reproduction_result.json"`. Record the comparison's actual output (MATCH/MISMATCH), task-specific Drive links and human review separately. Details: `docs/SCIENCE_REPRODUCTION_RUNBOOK.md`.
 
+## Reproduction output comparison — user-reported local MATCH (2026-11-15)
+
+A local terminal screenshot supplied after the three `BLOOM_RECHECK_*` tasks completed shows the result of `scripts/validate_science.py`:
+
+```text
+Comparison with independently supplied Earth Engine exports
+Status: **match**
+- ndvi_annual.csv: MATCH; rows=40
+- rainfall_annual.csv: MATCH; rows=40
+- study_areas.geojson: MATCH; Feature IDs and ordered geometry coordinates match (tolerance 1e-9 degrees)
+```
+
+**Source of the compared files:** The user explicitly stated that they had downloaded the latest outputs from Google Earth Engine and **overwritten some files in their local `~/Desktop/bloom_ee_original` directory** (rather than keeping them in `~/Desktop/bloom_ee_rerun`). They then reran the audit pointing `--original-dir` at the `bloom_ee_original` folder. Therefore the comparison reports match against the **files currently present in that directory**, which the user identifies as the new rerun outputs.
+
+**What this supports:** A successful, user-run, row-wise NDVI/rainfall and geometry correspondence check between the files supplied locally and the unchanged repository data. Combined with the independently visible `Completed` rerun tasks and the static tests checking frozen polygons/methods, it provides **strong evidence of same-method reproducibility**.
+
+**Caveats:** The assistant did not directly inspect the contents or verify the Drive file IDs of those local downloads; the screenshot alone cannot cryptographically link the local files to specific new task output objects. The folder name `bloom_ee_original` is now **misleading** because its contents were overwritten. It must not be described as an intact archive of the original task outputs. The comparison is **not** independent scientific method validation, and a human reviewer still needs to confirm task-to-Drive-file correspondence and give scientific sign-off. The original export tasks remain recorded above, and their source output files can be recovered separately from Drive if needed.
+
+**Do not change** `data/metadata.json` from `pending` or edit the production website. Preserve `~/Desktop/BLOOM_reproduction_result.md`, `~/Desktop/BLOOM_reproduction_result.json`, task screenshots, the new export files, and the actual Drive links in an evidence bundle.
+
 ## Remaining evidence to collect without touching the BLOOM site
 
 1. **Completed:** All three task IDs, completed states and displayed start times are recorded from user-supplied screenshots. Confirm their association with the specific original exported files through the task details and corresponding Drive file IDs.
 2. **Import screenshot added:** Current Code Editor shows `areaA: MultiPolygon, 15 vertices` with two coordinate elements and confirms the code's 0/1 indexing visually. Preserve a task-specific source/import record or independently rerun with the documented original geometry; the current editor's unsaved import is not automatically the completed task's input.
 3. Capture the original Drive URLs or file IDs for all three completed exports, and preserve the unmodified exports separately.
 4. Confirm the Earth Engine project used by the actual tasks, not merely the selected project label in the Code Editor header.
-5. **Execution completed in Earth Engine:** The three `BLOOM_RECHECK_*` tasks are shown completed (IDs above). **Still pending:** download their actual output files, run a fresh comparison to the repository, and document any differences in values or methodology.
+5. **Execution and user-run comparison completed:** The three `BLOOM_RECHECK_*` tasks are shown completed, and the user supplied a terminal screenshot showing all three local comparison results as MATCH (see above). **Still pending:** retain/inspect the matching report and original/new Drive file IDs to bind the comparison to those exact tasks, restore an archival copy of original task exports if needed, and obtain scientific reviewer sign-off.
 6. Obtain a named scientific reviewer sign-off. Only then may the team decide whether a **separate reviewed** change to `data/metadata.json` should mark a verified source.
 
 **Decision:** Scientific provenance remains **pending**. Do not change `data/metadata.json` to `verified` or publish unsupported source-certification claims.
