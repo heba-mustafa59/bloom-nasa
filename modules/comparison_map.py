@@ -37,10 +37,11 @@ def build_comparison_map(geography, pair, basemap='Streets', verified=False):
     for feature in features:
         area = feature['properties']['area_id']
         color = SLOT_COLORS[pair.index(area)]
-        # Plain tooltip IDs are intentional: streamlit-folium returns their text.
+        # GeoJsonTooltip supplies the callable expected by GeoJSON click events.
+        # Its text contains only the contract ID, with no presentation aliases.
         # No spatial guessing, bounding-box hits or fabricated geometry.
         folium.GeoJson(
-            feature, name=area, tooltip=folium.Tooltip(area),
+            feature, name=area, tooltip=folium.GeoJsonTooltip(fields=['area_id'], labels=False),
             style_function=lambda _, c=color: dict(color=c, fillColor=c, weight=4,
                                                     fillOpacity=.28, dashArray=None if verified else '7 5'),
             highlight_function=lambda _: dict(weight=6, fillOpacity=.48),
