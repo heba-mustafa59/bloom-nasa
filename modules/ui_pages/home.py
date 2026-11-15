@@ -174,6 +174,48 @@ def render(ctx, navigate):
             navigate("Explore")
 
     # =========================================
+    # 02C — THE SOLUTION (VISIBLE BEFORE ANY GENERAL INTRO)
+    # =========================================
+    st.markdown(
+        """
+        <style>
+        .bloom-solution-home{border:1px solid #d5e0cb;border-radius:20px;
+          padding:28px 30px;margin:22px 0 20px;background:#f5f8f0}
+        .bloom-solution-home .eyebrow{color:#66834f;font-size:12px;
+          letter-spacing:.16em;font-weight:700}
+        .bloom-solution-home h2{color:#1f3f2b;font-size:clamp(27px,3vw,38px);margin:9px 0}
+        .bloom-solution-home p{color:#4a654f;line-height:1.8;max-width:840px}
+        .bloom-solution-home .steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}
+        .bloom-solution-home .steps span{border:1px solid #c5d7b9;border-radius:30px;
+          color:#30563c;background:white;padding:9px 15px;font-size:13px;font-weight:600}
+        </style>
+        <section class="bloom-solution-home">
+          <div class="eyebrow">THE SOLUTION / FROM SCIENCE TO ACTION</div>
+          <h2>Don't just detect change. Know what to check next.</h2>
+          <p>
+            A satellite can show a vegetation signal, but cannot tell a farmer
+            exactly why it happened. BLOOM connects twenty years of
+            observations to an explainable area priority, a ground-truth
+            checklist, conditional next steps and a plan to measure outcomes.
+          </p>
+          <div class="steps">
+            <span>01 · DETECT</span><span>02 · VERIFY</span>
+            <span>03 · ACT IF CONFIRMED</span><span>04 · MEASURE</span>
+          </div>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+    if ctx.ready and not ctx.is_demo:
+        if st.button(
+            "Build an evidence-based action plan →",
+            key="bloom_home_solution_start",
+            type="primary",
+        ):
+            st.session_state["bloom_advisor_goal"] = "field_followup"
+            navigate("Explore")
+
+    # =========================================
     # 03 — INTRODUCTION
     # =========================================
 
