@@ -1,4 +1,4 @@
-"""BLOOM map UI: renders verified GeoJSON polygons; selection belongs to app.py."""
+"""BLOOM map UI: renders supplied GeoJSON polygons; provenance is tracked separately."""
 from __future__ import annotations
 
 from math import isfinite
@@ -54,7 +54,7 @@ def render_map(study_areas: dict, selected_area_id: str) -> None:
     The integration developer controls selected_area_id inside app.py.
     """
     st.markdown("### 01 / Choose Your Case")
-    st.caption("Explore the verified study-area boundaries near Jericho, Palestine.")
+    st.caption("Explore supplied study-area boundaries near Jericho, Palestine. Source verification is tracked separately.")
 
     if selected_area_id not in AREA_NAMES:
         st.warning("Please select Area A or Area B.")
@@ -62,7 +62,7 @@ def render_map(study_areas: dict, selected_area_id: str) -> None:
 
     features = _valid_features(study_areas)
     if not features:
-        st.info("Study areas not available — awaiting verified GeoJSON boundaries.")
+        st.info("Study-area boundaries are unavailable for this data source.")
         return
 
     points = [point for f in features for point in _coordinates(f["geometry"]["coordinates"])]
@@ -102,7 +102,7 @@ def render_map(study_areas: dict, selected_area_id: str) -> None:
         )
         st.caption(
             f"Selected: {AREA_NAMES[selected_area_id]}. "
-            "Area selection is controlled by the main application."
+            "Polygon source and verification status are documented separately."
         )
     except (ValueError, TypeError, KeyError, AttributeError):
         st.error("Unable to render the study-area map. Please check the GeoJSON file.")
