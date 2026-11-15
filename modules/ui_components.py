@@ -114,7 +114,7 @@ def availability(ctx) -> bool:
         return True
 
     st.info(
-        "**Data unavailable.** No verified NASA "
+        "**Data unavailable.** No validated research "
         "observations could be loaded for this view."
     )
 
@@ -132,7 +132,13 @@ def availability(ctx) -> bool:
 
 
 def data_label(ctx) -> None:
-    if ctx.is_demo:
+    if ctx.mode == "local":
+        st.info(
+            "**LOCAL CSV — RESEARCH PREVIEW.** "
+            "Annual scientific results are computed from project exports. "
+            "Source provenance is pending independent verification."
+        )
+    elif ctx.is_demo:
         st.markdown(
             '''
             <div class="bloom-data-ribbon demo">
