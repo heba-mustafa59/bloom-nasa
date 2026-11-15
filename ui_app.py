@@ -73,7 +73,7 @@ def main() -> None:
                 <div class="bloom-nav-meta">
                     <i></i> JERICHO
                     <span class="dot">·</span>
-                    EARTH INTELLIGENCE
+                    EARTH OBSERVATION
                 </div>
             </div>
             ''',
@@ -117,15 +117,15 @@ def main() -> None:
         st.markdown(
             '''
             <div class="bloom-side-head">
-                <span>YOUR RESEARCH SPACE</span>
-                <h3>Investigation<br>controls.</h3>
-                <p>One study, many perspectives.</p>
+                <span>STUDY SETTINGS</span>
+                <h3>Research<br>controls.</h3>
+                <p>Explore by area and year.</p>
             </div>
             ''',
             unsafe_allow_html=True,
         )
 
-        st.caption("NAVIGATE")
+        st.caption("PAGES")
 
         st.selectbox(
             "Choose a page",
@@ -139,7 +139,7 @@ def main() -> None:
 
         source = st.radio(
             "Choose data source",
-            ["Uploaded NASA CSVs (pilot)", "Synthetic demo"],
+            ["NASA study data", "Synthetic demo"],
             key="bloom_source",
             label_visibility="collapsed",
             help=(
