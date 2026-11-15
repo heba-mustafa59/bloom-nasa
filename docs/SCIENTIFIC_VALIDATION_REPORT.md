@@ -62,11 +62,17 @@ python scripts/validate_science.py --report /tmp/bloom_science_audit.md --json /
 
 **Important:** filenames, plausible values, and matching source IDs in code do not authenticate the original NASA extraction. GPM's resolution is much coarser than MODIS, and nearby polygon rainfall estimates may not be spatially independent.
 
+### Source-code review update — 2026-11-15
+
+The user supplied the Earth Engine JavaScript following the request to inspect the source script of the completed export tasks. The core export logic **matches** `scripts/export_nasa_data.js` as checked into GitHub (study geometry split, MODIS/GPM collections, QA and scaling, annual reductions, task names and export columns). The pasted version adds several `print()` diagnostics for record counts, coverage and 2024 values, which do not alter data generation.
+
+This substantially clarifies the methodology actually represented in the supplied source text. Nevertheless, a pasted script alone cannot establish that the original completed tasks executed **that exact saved revision** or that their imported `areaA` geometry was identical at run time. Preserve task-specific `Source Script` links, asset import and Drive export IDs to close those evidentiary gaps. More details: `docs/OBSERVED_EARTH_ENGINE_TASKS.md`.
+
 ## 5. Verification items that still require human-supplied evidence
 
 | Evidence | Current status | Needed to close |
 | --- | --- | --- |
-| Original Earth Engine project, task history and task IDs | **PARTIAL** — three completed task IDs and start times visible in supplied screenshots | Verify their project, source script and file links; see `docs/OBSERVED_EARTH_ENGINE_TASKS.md` |
+| Original Earth Engine project, task history and task IDs | **PARTIAL** — three completed task IDs and start times shown; supplied source text matches repository export logic | Preserve task-specific script revisions, project association and Drive export links; see `docs/OBSERVED_EARTH_ENGINE_TASKS.md` |
 | Original completed task output CSVs | **PARTIAL** — user-shared local comparison reported MATCH for 40 NDVI rows and 40 rainfall rows | Keep original Drive task links/files and independently verify correspondence to those task IDs |
 | Original `areaA` imported geometry and export match | **PARTIAL** — user-shared comparison of exported GeoJSON reported matching feature IDs/coordinates | Confirm the actual task source script used the original `areaA` polygon import |
 | Independent Earth Engine reproduction | **MISSING** | Execute documented export script on the same imported polygon and reconcile outputs |
