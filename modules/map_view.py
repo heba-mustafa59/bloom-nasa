@@ -348,8 +348,8 @@ def render_map(
     import streamlit as st
     from streamlit_folium import st_folium
 
-    st.markdown("### 01 / BLOOM Earth Explorer · مستكشف أريحا")
-    st.caption("ارسمِي بقعة مرشحة خضراء أو جافة، واحفظيها للمراجعة. التصنيف اليدوي ليس نتيجة NASA.")
+    st.markdown("### BLOOM Earth Explorer")
+    st.caption("Use the optional polygon tool to mark potential patches for field review. Manual annotations are not NASA classifications.")
     st.caption("Tell es-Sultan & Al-Auja are reference pins. Polygons come only from the supplied GeoJSON.")
     if selected_area_id not in AREA_NAMES:
         st.warning("Choose a valid study polygon in the main application.")
@@ -371,12 +371,12 @@ def render_map(
 
     col1, col2, col3 = st.columns([2, 2, 2])
     with col1:
-        focus_name = st.selectbox("🧭 الانتقال إلى", ["Both sites", "Selected polygon", "Tell es-Sultan", "Al-Auja"],
+        focus_name = st.selectbox("Map focus", ["Both sites", "Selected polygon", "Tell es-Sultan", "Al-Auja"],
                                   key="bloom_map_focus")
     with col2:
-        basemap = st.selectbox("🗺️ نمط الخريطة", BASEMAPS, key="bloom_map_basemap")
+        basemap = st.selectbox("Base map", BASEMAPS, key="bloom_map_basemap")
     with col3:
-        mode = st.selectbox("🌱 طبقة البيانات", MODES, key="bloom_map_mode")
+        mode = st.selectbox("Map layer", MODES, key="bloom_map_mode")
     a, b, c = st.columns(3)
     with a:
         pins = st.checkbox("Show place pins", value=True, key="bloom_map_pins")
@@ -386,27 +386,27 @@ def render_map(
         mini = st.checkbox("Show mini-map", value=False, key="bloom_map_minimap")
 
     if selected_year is None:
-        year = st.slider("📅 السنة", 2005, 2024, 2024, key="bloom_map_year")
+        year = st.slider("Year", 2005, 2024, 2024, key="bloom_map_year")
     else:
         year = int(selected_year)
-        st.caption(f"Year selected in app.py: {year}")
+        st.caption(f"Displaying year: {year}")
     focus = {"Both sites": "overview", "Selected polygon": "selected",
              "Tell es-Sultan": "tell_sultan", "Al-Auja": "al_auja"}[focus_name]
     if "bloom_candidate_patches" not in st.session_state:
         st.session_state["bloom_candidate_patches"] = []
     patches = st.session_state["bloom_candidate_patches"]
-    st.markdown("#### ✏️ تحديد بقع خضراء أو جافة (يدويًا)")
+    st.markdown("#### Field annotations (optional)")
     choose_col, name_col = st.columns(2)
     with choose_col:
         class_choice = st.selectbox(
-            "نوع البقعة التي تريدين حفظها",
+            "Candidate patch type",
             ["vegetated_candidate", "dry_candidate"],
-            format_func=lambda c: "🌿 خضراء مرشحة" if c == "vegetated_candidate" else "🏜️ جافة مرشحة",
+            format_func=lambda c: "Vegetation candidate" if c == "vegetated_candidate" else "Dry area candidate",
             key="bloom_candidate_kind",
         )
     with name_col:
-        patch_name = st.text_input("اسم البقعة (اختياري)", key="bloom_candidate_name")
-    st.caption("اضغطي أداة المضلع في الخريطة (شكل خماسي)، ارسمي حدود البقعة، ثم اضغطي حفظ آخر مضلع. البقع لا تُرسل إلى GitHub تلقائيًا.")
+        patch_name = st.text_input("Patch label (optional)", key="bloom_candidate_name")
+    st.caption("Use the polygon drawing tool on the map, then save your drawn patch below. These annotations stay in your session; they are not uploaded automatically.")
 
     fmap = build_map(study_areas, selected_area_id, ndvi_df=ndvi_df,
                      rainfall_df=rainfall_df, metadata=metadata, selected_year=year,
@@ -423,11 +423,11 @@ def render_map(
 
     save_col, clear_col = st.columns(2)
     with save_col:
-        if st.button("💾 حفظ آخر بقعة مرسومة", key="bloom_patch_save"):
+        if st.button("Save drawn patch", key="bloom_patch_save"):
             drawing = state.get("last_active_drawing") if isinstance(state, dict) else None
             geometry = drawing.get("geometry") if isinstance(drawing, dict) else None
             if _polygon_points(geometry) is None:
-                st.warning("ارسمي مضلعًا داخل منطقة أريحا أولًا. النقاط والخطوط وحدها لا تكفي.")
+                st.warning("Draw a polygon around the relevant location first; points and lines cannot be saved as a patch.")
             else:
                 new_feature = {
                     "type": "Feature", "geometry": geometry,
@@ -438,26 +438,26 @@ def render_map(
                     },
                 }
                 if any(item["geometry"] == geometry for item in patches):
-                    st.warning("هذه البقعة محفوظة سابقًا. ارسمي بقعة جديدة.")
+                    st.warning("This polygon is already saved. Draw a different one.")
                 else:
                     patches.append(new_feature)
                     st.rerun()
     with clear_col:
-        if st.button("🗑️ مسح البقع المحفوظة", key="bloom_patch_clear", disabled=not patches):
+        if st.button("Clear saved patches", key="bloom_patch_clear", disabled=not patches):
             st.session_state["bloom_candidate_patches"] = []
             st.rerun()
 
     if patches:
         import json
         st.download_button(
-            "⬇️ تنزيل البقع المرشحة للمراجعة (GeoJSON)",
+            "Download field annotations (GeoJSON)",
             data=json.dumps({"type": "FeatureCollection", "features": patches},
                             ensure_ascii=False, indent=2),
             file_name="candidate_patches_FOR_REVIEW.geojson",
             mime="application/geo+json",
             key="bloom_patch_download",
         )
-        st.caption(f"عدد البقع المحفوظة: {len(patches)} — بقع يدوية غير موثّقة؛ لا تستخدميها كملف study_areas.geojson قبل المراجعة.")
+        st.caption(f"Saved candidate patches: {len(patches)} — unverified manual annotations; do not use these as study_areas.geojson without independent review.")
 
     st.caption("Zoom +/− · Satellite · Fullscreen · Measure distance/area · Coordinate finder · Layer control")
     if isinstance(state, dict) and isinstance(state.get("last_clicked"), dict):
