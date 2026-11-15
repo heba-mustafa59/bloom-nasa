@@ -11,6 +11,7 @@ import streamlit as st
 
 from modules.ui_components import inject_styles, ui_footer, data_label
 from modules.ui_data import AREA_LABELS, load_ui_context
+from modules.ui_pilot_context import pilot_context
 from modules.ui_pages import home, explore, analytics, mystery, compare, reports, about
 
 ROOT = Path(__file__).resolve().parent
@@ -37,6 +38,12 @@ def main() -> None:
             "About": "BLOOM — evidence-led vegetation research in Jericho."
         },
     )
+
+    # Folium click updates are queued to avoid mutating the sidebar widget
+    # after Streamlit has instantiated it in the preceding run.
+    pending = st.session_state.pop("bloom_pending_area", None)
+    if pending in AREA_LABELS:
+        st.session_state["bloom_area"] = pending
 
     inject_styles(ROOT)
 
@@ -132,7 +139,7 @@ def main() -> None:
 
         source = st.radio(
             "Choose data source",
-            ["Synthetic demo", "Verified NASA"],
+            ["Uploaded NASA CSVs (pilot)", "Synthetic demo"],
             key="bloom_source",
             label_visibility="collapsed",
             help=(
@@ -187,12 +194,12 @@ def main() -> None:
             unsafe_allow_html=True,
         )
 
-    ctx = load_ui_context(
+    ctx = pilot_context(load_ui_context(
         mode,
         area_id,
         start_year,
         end_year
-    )
+    ))
 
     current_page = st.session_state["bloom_page"]
 
