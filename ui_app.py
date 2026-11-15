@@ -1,8 +1,7 @@
+"""BLOOM: one clear navigation system and visible study controls.
 
-"""BLOOM / editorial multi-page frontend.
-
-Run: python -m streamlit run ui_app.py
-This is a self-contained UI entry point; app.py and data/science APIs are untouched.
+Main Streamlit entry point (app.py imports this main function).
+Scientific calculations remain in the team's existing modules.
 """
 from __future__ import annotations
 
@@ -24,181 +23,166 @@ NAV = [
     ("Reports", reports),
     ("About", about),
 ]
-
-NAV_NAMES = [label for label, _ in NAV]
+NAV_NAMES = [name for name, _ in NAV]
+NAV_TITLES = {
+    "Home": "Overview",
+    "Explore": "Explore map",
+    "Analytics": "Trends",
+    "Mystery Lab": "Mystery lab",
+    "Compare": "Compare areas",
+    "Reports": "Reports",
+    "About": "About",
+}
+SOURCE_CHOICES = [
+    "Uploaded observations · verification pending",
+    "Verified NASA only",
+    "Synthetic demo",
+]
 
 
 def main() -> None:
     st.set_page_config(
-        page_title="BLOOM / Beyond the Green",
+        page_title="BLOOM | Earth Intelligence",
+        page_icon="🌿",
         layout="wide",
         initial_sidebar_state="collapsed",
         menu_items={
-            "About": "BLOOM — evidence-led vegetation research in Jericho."
+            "About": "BLOOM — exploring vegetation and rainfall in Jericho."
         },
     )
-
     inject_styles(ROOT)
 
     if st.session_state.get("bloom_page") not in NAV_NAMES:
         st.session_state["bloom_page"] = "Home"
 
-    def navigate(label: str) -> None:
-        if label in NAV_NAMES:
-            st.session_state["bloom_page"] = label
+    def navigate(page_name: str) -> None:
+        if page_name in NAV_NAMES:
+            st.session_state["bloom_page"] = page_name
             st.rerun()
 
-    # Top navigation bar
-    try:
-        bar = st.container(key="bloom_topnav")
-    except TypeError:
-        bar = st.container()
+    # Single destination state for desktop nav, mobile nav and page CTAs.
+    if st.session_state.get("bloom_mobile_page") != st.session_state["bloom_page"]:
+        st.session_state["bloom_mobile_page"] = st.session_state["bloom_page"]
 
-    with bar:
+    def mobile_changed() -> None:
+        st.session_state["bloom_page"] = st.session_state["bloom_mobile_page"]
+
+    with st.container(key="bloom_topnav"):
         st.markdown(
-            '''
+            """
             <div class="bloom-nav-brand">
-                <div class="bloom-nav-logo">
-                    <span>
-                        <b>BLOOM</b>
-                    </span>
-                </div>
-                <div class="bloom-nav-meta">
-                    <i></i> JERICHO
-                    <span class="dot">·</span>
-                    EARTH INTELLIGENCE
-                </div>
+              <div class="bloom-nav-logo">
+                <span class="bloom-nav-mark" aria-hidden="true">✳</span>
+                <b>BLOOM</b>
+              </div>
+              <div class="bloom-nav-meta">
+                JERICHO, PALESTINE <span class="dot">·</span> EARTH INTELLIGENCE
+              </div>
             </div>
-            ''',
+            """,
             unsafe_allow_html=True,
         )
 
-        links = st.columns(
-            [1, 1, 1.12, 1.35, 1, 1, 1],
-            gap="small"
-        )
+        with st.container(key="bloom_desktop_nav"):
+            columns = st.columns([1.05, 1.2, .95, 1.2, 1.25, .95, .85], gap="small")
+            for column, (name, _) in zip(columns, NAV):
+                with column:
+                    if st.button(
+                        NAV_TITLES[name],
+                        key=f"nav_{name.replace(' ', '_')}",
+                        type="primary" if st.session_state["bloom_page"] == name else "secondary",
+                        use_container_width=True,
+                    ):
+                        navigate(name)
 
-        for column, (label, _) in zip(links, NAV):
-            with column:
-                if st.button(
-                    label,
-                    key=f"nav_{label.replace(' ', '_')}",
-                    type=(
-                        "primary"
-                        if st.session_state["bloom_page"] == label
-                        else "secondary"
-                    ),
-                    use_container_width=True,
-                ):
-                    navigate(label)
-
-    # Synchronize alternate sidebar navigation
-    if (
-        st.session_state.get("sidebar_page_selector")
-        != st.session_state["bloom_page"]
-    ):
-        st.session_state["sidebar_page_selector"] = (
-            st.session_state["bloom_page"]
-        )
-
-    def sidebar_changed() -> None:
-        st.session_state["bloom_page"] = (
-            st.session_state["sidebar_page_selector"]
-        )
-
-    with st.sidebar:
-        st.markdown(
-            '''
-            <div class="bloom-side-head">
-                <span>YOUR RESEARCH SPACE</span>
-                <h3>Investigation<br>controls.</h3>
-                <p>One study, many perspectives.</p>
-            </div>
-            ''',
-            unsafe_allow_html=True,
-        )
-
-        st.caption("NAVIGATE")
-
-        st.selectbox(
-            "Choose a page",
-            NAV_NAMES,
-            key="sidebar_page_selector",
-            on_change=sidebar_changed,
-        )
-
-        st.divider()
-        st.caption("DATA SOURCE")
-
-        source = st.radio(
-            "Choose data source",
-            ["Uploaded observations · verification pending", "Verified NASA only", "Synthetic demo"],
-            key="bloom_source",
-            label_visibility="collapsed",
-            help=(
-                "Uploaded observations are original repository CSVs, "
-                "but their NASA export provenance is pending. "
-                "Strict mode accepts only independently verified exports. "
-                "Synthetic mode is for UI testing only."
-            ),
-        )
-
-        mode = {
-            "Uploaded observations · verification pending": "review",
-            "Verified NASA only": "verified",
-            "Synthetic demo": "demo",
-        }[source]
-
-        st.caption("STUDY AREA")
-
-        area_id = st.selectbox(
-            "Choose study area",
-            list(AREA_LABELS),
-            format_func=AREA_LABELS.get,
-            key="bloom_area",
-            label_visibility="collapsed",
-        )
-
-        st.caption("TIME WINDOW")
-
-        start_year, end_year = st.slider(
-            "Display years",
-            min_value=2005,
-            max_value=2024,
-            value=(2005, 2024),
-            key="bloom_years",
-            label_visibility="collapsed",
-        )
-
-        st.divider()
-        st.caption("METHODS")
-
-        st.markdown("**MODIS** · Vegetation index")
-        st.markdown("**GPM** · Rainfall estimates")
-        st.caption(
-            "Correlation does not establish causation."
-        )
-
-        st.markdown(
-            '''
-            <div class="bloom-side-bottom">
-                BLOOM / 2026<br>
-                Evidence before conclusions.
-            </div>
-            ''',
-            unsafe_allow_html=True,
-        )
-
-    ctx = load_ui_context(
-        mode,
-        area_id,
-        start_year,
-        end_year
-    )
+        with st.container(key="bloom_mobile_nav"):
+            st.selectbox(
+                "Go to",
+                NAV_NAMES,
+                format_func=NAV_TITLES.get,
+                key="bloom_mobile_page",
+                on_change=mobile_changed,
+            )
 
     current_page = st.session_state["bloom_page"]
 
-    # Home begins with the study overview
+    # Study controls must be immediately discoverable, not hidden in sidebar.
+    # On Home we focus on the overview; all exploration pages show controls.
+    if current_page != "Home":
+        with st.container(key="bloom_filters"):
+            st.markdown(
+                '<div class="bloom-filter-title"><strong>YOUR STUDY</strong>'
+                '<span>Choose a region, period, and evidence source</span></div>',
+                unsafe_allow_html=True,
+            )
+            src_col, area_col, period_col = st.columns([1.35, .85, 1.3], gap="medium")
+            with src_col:
+                source = st.selectbox(
+                    "Data source",
+                    SOURCE_CHOICES,
+                    key="bloom_source",
+                    help=(
+                        "Pending observations come from uploaded CSV files. "
+                        "Their original NASA export provenance is not independently confirmed. "
+                        "Strict verified mode rejects them until verified."
+                    ),
+                )
+            with area_col:
+                area_id = st.selectbox(
+                    "Study area",
+                    list(AREA_LABELS),
+                    format_func=AREA_LABELS.get,
+                    key="bloom_area",
+                )
+            with period_col:
+                start_year, end_year = st.slider(
+                    "Years",
+                    min_value=2005,
+                    max_value=2024,
+                    value=(2005, 2024),
+                    key="bloom_years",
+                )
+    else:
+        source = st.session_state.get("bloom_source", SOURCE_CHOICES[0])
+        area_id = st.session_state.get("bloom_area", "area_a")
+        start_year, end_year = st.session_state.get("bloom_years", (2005, 2024))
+
+    mode = {
+        SOURCE_CHOICES[0]: "review",
+        SOURCE_CHOICES[1]: "verified",
+        SOURCE_CHOICES[2]: "demo",
+    }.get(source, "review")
+
+    # The sidebar is only optional methodology/help. Critical controls are above.
+    with st.sidebar:
+        st.markdown(
+            """
+            <div class="bloom-side-head">
+                <span>FIELD NOTES</span>
+                <h3>Know the data.</h3>
+                <p>Evidence first. Interpret with context.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.markdown("**Study**  ")
+        st.caption("Jericho, Palestine · 2005–2024 · two study polygons")
+        st.divider()
+        st.markdown("**Satellite datasets**")
+        st.markdown("MODIS MOD13Q1 · Vegetation index")
+        st.markdown("GPM IMERG V07 · Rainfall estimates")
+        st.divider()
+        st.info(
+            "Uploaded observations are provisional until source export "
+            "provenance and exact matching polygons are confirmed."
+        )
+        st.caption(
+            "Selecting a new area, period or data source is available at the "
+            "top of each exploration page."
+        )
+
+    ctx = load_ui_context(mode, area_id, start_year, end_year)
+
     if current_page != "Home":
         data_label(ctx)
 
