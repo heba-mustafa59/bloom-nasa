@@ -5,6 +5,7 @@ Never treat a submitted report as verified automatically.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from hashlib import sha256
 from io import BytesIO
@@ -34,6 +35,7 @@ def _storage(root: Path | str | None) -> Path:
     return folder
 
 
+@contextmanager
 def _database(root: Path | str | None = None):
     db = sqlite3.connect(_storage(root) / "observations.sqlite3", timeout=5)
     db.execute("PRAGMA foreign_keys = ON")
@@ -52,7 +54,11 @@ def _database(root: Path | str | None = None):
             detail TEXT NOT NULL, created_utc TEXT NOT NULL)
     """)
     db.commit()
-    return db
+    try:
+        yield db
+        db.commit()
+    finally:
+        db.close()
 
 
 def sanitize_photo(content: bytes, name: str) -> tuple[bytes, str, str]:
