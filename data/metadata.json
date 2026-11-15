@@ -1,0 +1,115 @@
+{
+  "project": "BLOOM — Beyond the Green",
+  "verification_status": "pending",
+  "reviewed_on_utc": "2026-11-15",
+  "study_location": "Jericho, Palestine",
+  "study_years": [
+    2005,
+    2024
+  ],
+  "study_areas": {
+    "area_a": "Eastern study polygon in supplied GeoJSON (candidate description: Agricultural study area). Location bounds checked; original selection, agricultural land use, and export provenance not independently confirmed.",
+    "area_b": "Western study polygon in supplied GeoJSON (candidate description: Mixed agricultural comparison area). Location bounds checked; original selection, land use, and export provenance not independently confirmed."
+  },
+  "study_geometry": {
+    "file": "data/study_areas.geojson",
+    "format": "GeoJSON FeatureCollection",
+    "area_ids": [
+      "area_a",
+      "area_b"
+    ],
+    "coordinate_reference_system": "WGS84 longitude/latitude (GeoJSON)",
+    "geometry_validation": "Both supplied polygon outer rings are closed and have coordinates in the expected Jericho envelope. This does not prove provenance or area selection.",
+    "same_geometry_as_nasa_exports": "not independently established"
+  },
+  "datasets": {
+    "vegetation": {
+      "file": "data/ndvi_annual.csv",
+      "declared_source": "NASA MODIS MOD13Q1 Collection 6.1",
+      "earth_engine_id": "MODIS/061/MOD13Q1",
+      "band": "NDVI",
+      "quality_mask": "SummaryQA == 0 (specified in repository export script; not confirmed for committed data)",
+      "scale_factor": 0.0001,
+      "spatial_resolution_m": 250,
+      "temporal_resolution": "16-day",
+      "aggregation": "Arithmetic average of valid spatial composite means per calendar year, according to export script; requires independent reproduction",
+      "annual_unit": "unitless",
+      "row_count": 40,
+      "years": [
+        2005,
+        2024
+      ],
+      "completeness": "20 annual records for each of two area IDs; count field within 1–24",
+      "verification_status": "pending_source_confirmation",
+      "catalog_url": "https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MOD13Q1",
+      "dataset_doi": "10.5067/MODIS/MOD13Q1.061"
+    },
+    "precipitation": {
+      "file": "data/rainfall_annual.csv",
+      "declared_source": "NASA GPM IMERG Monthly V07",
+      "earth_engine_id": "NASA/GPM_L3/IMERG_MONTHLY_V07",
+      "band": "precipitation",
+      "native_unit": "mm/hour",
+      "spatial_resolution_approx_km": 11.132,
+      "aggregation": "Monthly mean rate multiplied by actual hours in month and spatially averaged by polygon; sum 12 months per year, according to script; requires independent reproduction",
+      "annual_unit": "mm/year",
+      "incomplete_year_policy": "null, never zero-fill",
+      "row_count": 40,
+      "years": [
+        2005,
+        2024
+      ],
+      "completeness": "20 annual records for each of two area IDs; valid_months = 12 in every row",
+      "verification_status": "pending_source_confirmation",
+      "catalog_url": "https://developers.google.com/earth-engine/datasets/catalog/NASA_GPM_L3_IMERG_MONTHLY_V07",
+      "dataset_doi": "10.5067/GPM/IMERG/3B-MONTH/07"
+    }
+  },
+  "reference_datasets": {
+    "nasa_power_jericho_point_rainfall": {
+      "file": "data/nasa_power_jericho_point_rainfall.csv",
+      "purpose": "Separate supporting Jericho point series only; not spatial statistics for area_a or area_b",
+      "script": "scripts/fetch_nasa_power.py",
+      "declared_parameter": "IMERG_PRECTOT",
+      "declared_location": {
+        "lat": 31.86,
+        "lon": 35.45
+      },
+      "years": [
+        2005,
+        2024
+      ],
+      "complete_annual_rows": 20,
+      "validation": "Table structure and daily counts reviewed; original NASA POWER response was not independently inspected",
+      "api_documentation_url": "https://power.larc.nasa.gov/"
+    }
+  },
+  "earth_engine_script": "scripts/export_nasa_data.js",
+  "original_export_date_utc": null,
+  "original_earth_engine_task_ids": [],
+  "original_export_links": [],
+  "source_evidence": {
+    "github_import_commit": "1521cf0ed78dc49a0264a1962caebdbab70f76c6",
+    "github_import_commit_date_utc": "2026-11-15T01:46:14Z",
+    "import_note": "Add files via upload — data for area a and b",
+    "interpretation": "Repository upload documents file arrival, not Earth Engine execution or NASA origin."
+  },
+  "validation": {
+    "performed_on_utc": "2026-11-15",
+    "structural_checks": "passed — row counts, year coverage, IDs, uniqueness, value bounds and quality-count fields",
+    "source_provenance": "pending — missing Earth Engine task logs and original output comparison",
+    "geometry_to_export_match": "pending",
+    "independent_reproduction": "pending",
+    "document": "docs/NASA_DATA_VALIDATION_REPORT.md",
+    "protocol": "docs/NASA_DATA_PROVENANCE.md"
+  },
+  "limitations": [
+    "The repository currently lacks independently inspected Earth Engine run history and raw export artifacts for the uploaded files.",
+    "GeoJSON geometry validity does not prove that the polygons were used to extract the current CSV values.",
+    "The polygon land-use labels are candidate descriptions and require independent supporting evidence.",
+    "MODIS NDVI 250 m and GPM IMERG ~11.1 km pixel sizes differ substantially; small neighboring polygons may share rainfall pixels.",
+    "Annual NDVI aggregation in the script averages spatial means of valid composites, not a fully area- and time-weighted pixel average.",
+    "No causal claims about irrigation, ecosystem health or land use should be inferred from NDVI/rainfall alone.",
+    "The separate NASA POWER point series cannot replace two polygon-specific rainfall series."
+  ]
+}
