@@ -49,7 +49,13 @@ def test_scientific_reduction_blocks_unchanged():
     # byte-for-byte unchanged up to the task export configuration.
     new_data_code = source.split(begin, 1)[1].split("// 6. RECHECK tasks:", 1)[0]
     old_data_code = original.split(begin, 1)[1].split(end, 1)[0]
-    assert new_data_code == old_data_code
+    # The original debug count referenced the old `polygons` import. The
+    # standalone recheck script must use its actual FeatureCollection.
+    updated_debug = "print('Polygon count (must be 2):', areas.size());"
+    obsolete_debug = "print('Polygon count (must be 2):', polygons.size());"
+    assert updated_debug in new_data_code
+    assert obsolete_debug not in new_data_code
+    assert new_data_code.replace(updated_debug, obsolete_debug) == old_data_code
 
 
 def test_rerun_exports_are_isolated_and_preserve_column_schemas():
@@ -70,6 +76,8 @@ def test_rerun_exports_are_isolated_and_preserve_column_schemas():
     assert "selectors: ['year', 'area_id', 'ndvi', 'valid_observations']" in source
     assert "selectors: ['year', 'area_id', 'rainfall_mm', 'valid_months']" in source
     assert "ee.List(areaA.coordinates())" not in source
+    assert "polygons.size()" not in source
+    assert "print('Polygon count (must be 2):', areas.size());" in source
     assert "filterDate('2005-01-01', '2025-01-01')" in source
 
 
