@@ -1,0 +1,28 @@
+name: Living Earth Missions scientific tests
+on:
+  push:
+    branches: [feature/bloom-living-earth-missions]
+  pull_request:
+    paths:
+      - 'modules/living_*.py'
+      - 'modules/ui_pages/living_missions.py'
+      - 'modules/ui_data.py'
+      - 'ui_app.py'
+      - 'tests/test_living_missions.py'
+      - '.github/workflows/living-missions.yml'
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Scientific and mission tests
+        run: python -m pytest tests/test_living_missions.py tests/test_ui_data.py tests/test_trends.py tests/test_mystery.py -q
+      - name: Compile integrated modules
+        run: python -m py_compile ui_app.py modules/living_data.py modules/living_missions.py modules/living_groundtruth.py modules/living_ai.py modules/living_webxr.py modules/ui_pages/living_missions.py
