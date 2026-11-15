@@ -29,7 +29,11 @@ def _report(
     source = (
         "SYNTHETIC DEMO — NOT NASA DATA"
         if ctx.is_demo
-        else "VERIFIED NASA EXPORTS"
+        else (
+            "NASA-source CSVs uploaded to the repository — original export provenance pending"
+            if ctx.metadata.get("verification_status") != "verified"
+            else "NASA EXPORTS — VERIFIED IN METADATA"
+        )
     )
 
     limitations = "\n".join(
@@ -131,6 +135,29 @@ def render(ctx, navigate):
         rain,
         mystery
     )
+
+    # Attach the same explainable Area Advisor result shown in Explore.
+    # Demo mode keeps its existing report behavior; no synthetic values
+    # are ever passed off as uploaded NASA observations.
+    if not ctx.is_demo:
+        from modules.area_advisor import GOAL_LABELS, advise_area, advisor_report
+        from modules.investigation_case import CaseData
+
+        selected_goal = st.selectbox(
+            "Area Advisor question",
+            list(GOAL_LABELS),
+            format_func=GOAL_LABELS.get,
+            key="bloom_report_advisor_goal",
+        )
+        data = CaseData(ctx.ndvi_df, ctx.rainfall_df, ctx.geojson, ctx.metadata)
+        recommendation = advise_area(data, selected_goal, int(ctx.end_year))
+        st.write(
+            "**Suggested area:** "
+            + (("Area A" if recommendation.winner == "area_a" else "Area B")
+               if recommendation.winner else "No clear recommendation")
+        )
+        st.caption(recommendation.explanation)
+        report += "\n---\n\n" + advisor_report(data, recommendation)
 
     with st.container(border=True):
         st.markdown(report)
