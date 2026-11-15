@@ -68,9 +68,8 @@ def render(ctx, navigate):
 
     section_title(
         "01 / MODEL",
-        "Prediction requires proof of usefulness",
-        "Train on earlier years, assess on later years. "
-        "Never evaluate on the same observations used for fitting."
+        "Model validation",
+        "Checked against later observations before any anomaly is reported."
     )
 
     l, r = st.columns(
@@ -113,21 +112,14 @@ def render(ctx, navigate):
             )
         else:
             st.warning(
-                "Insufficient evidence to issue anomaly alerts. "
-                "This is a valid scientific outcome."
+                "The model did not pass validation; no reliable anomaly alerts can be issued."
             )
 
-        st.caption(
-            "Annual rainfall is not the only influence "
-            "on vegetation. Native satellite resolutions "
-            "also differ."
-        )
 
     section_title(
         "02 / DEVIATIONS",
-        "Where expectation and observation differ",
-        "Only defensible, engine-generated outlier "
-        "flags are shown below."
+        "Observed versus expected",
+        "Only validated outliers are displayed."
     )
 
     anomalies = result.get("anomalies") or []
@@ -188,8 +180,8 @@ def render(ctx, navigate):
 
     section_title(
         "03 / VERDICT",
-        "What can we actually say?",
-        "Keep interpretation separate from suggestion."
+        "What the evidence shows",
+        ""
     )
 
     verdict = escape(
@@ -211,8 +203,8 @@ def render(ctx, navigate):
     )
 
     with st.expander(
-        "Thresholds, assumptions, limitations",
-        expanded=True
+        "Methods and limitations",
+        expanded=False
     ):
         st.write(
             "A validation-year residual may be flagged "

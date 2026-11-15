@@ -149,7 +149,7 @@ def data_label(ctx) -> None:
         st.markdown(
             '''
             <div class="bloom-data-ribbon real">
-                <b>UPLOADED NASA CSVs · PILOT</b>
+                <b>NASA STUDY DATA</b>
                 <span>
                     Using original study observations;
                     independent export provenance review is pending.
@@ -223,11 +223,11 @@ def ui_footer() -> None:
             </div>
             <div class="footer-caption">
                 JERICHO, PALESTINE
-                &nbsp; / &nbsp; EARTH INTELLIGENCE
+                &nbsp; / &nbsp; EARTH OBSERVATION
             </div>
             <small>
                 Evidence first. Conclusions with context.<br>
-                Research prototype · NASA MODIS + GPM
+                MODIS NDVI · GPM IMERG rainfall
             </small>
         </footer>
         ''',

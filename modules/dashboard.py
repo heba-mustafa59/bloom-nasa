@@ -10,10 +10,10 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-FOREST = "#163D2E"
-LEAF = "#4C8B63"
-AMBER = "#D99A56"
-SKY = "#62AFC8"
+FOREST = "#1F3018"
+LEAF = "#769945"
+AMBER = "#B68548"
+SKY = "#648B9A"
 
 
 def _number(value, decimals=3):
@@ -75,7 +75,7 @@ def _chart(df, column, label, kind, color, unit):
         template="plotly_white", height=310, margin=dict(l=12, r=12, t=16, b=15),
         paper_bgcolor="white", plot_bgcolor="white", showlegend=False,
         xaxis_title="Year", yaxis_title=unit,
-        font=dict(family="Inter, Arial", color=FOREST),
+        font=dict(family="DM Sans, Arial", color=FOREST, size=14),
     )
     fig.update_xaxes(dtick=max(1, len(clean) // 6), tickformat="d", showgrid=False)
     fig.update_yaxes(gridcolor="#EEF0EA", zeroline=False)
@@ -124,8 +124,7 @@ def _trend_metrics(label, result, unit):
 
 
 def _mystery(mystery_result):
-    st.markdown("### 03 / Mystery Detector")
-    st.caption("Does observed vegetation behave unexpectedly relative to rainfall-based expectations?")
+    st.markdown("### 03 / Anomaly Check")
     if not isinstance(mystery_result, dict) or not mystery_result:
         st.info("Mystery analysis not yet available.")
         return
@@ -134,8 +133,7 @@ def _mystery(mystery_result):
         st.info("Model not evaluated yet. No anomaly conclusion is available.")
         return
     if status in {"insufficient_evidence", "unreliable", "failed", "error"}:
-        st.warning("Insufficient evidence to detect anomalies.")
-        st.caption("The rainfall model has not passed the necessary validation checks.")
+        st.warning("The rainfall model did not pass validation. Anomalies cannot be identified reliably.")
         return
 
     a, b = st.columns(2)
@@ -143,7 +141,6 @@ def _mystery(mystery_result):
         st.metric("Validation R²", _number(mystery_result.get("validation_r2")))
     with b:
         st.metric("Validation MAE", _number(mystery_result.get("validation_mae")))
-    st.caption(f"Model status: {status}. Validation metrics are supplied by the analysis team.")
 
     # Optional prediction-series keys are displayed only if the model supplies them.
     predictions = mystery_result.get("predictions")
@@ -173,7 +170,7 @@ def _mystery(mystery_result):
         st.markdown("**Flagged years (model output)**")
         st.dataframe(pd.DataFrame(anomalies), use_container_width=True, hide_index=True)
     else:
-        st.caption("No anomalous years were supplied by the analysis module.")
+        st.caption("No anomalies identified by the validated model.")
     opposite = mystery_result.get("opposing_trends")
     if opposite is True:
         st.info("Opposing vegetation and rainfall trends were flagged for further investigation.")
@@ -186,8 +183,7 @@ def _mystery(mystery_result):
 
 
 def _verdict(trend_results, mystery_result):
-    st.markdown("### 04 / Final Verdict")
-    st.caption("Evidence-led conclusions, not automatic causal explanations.")
+    st.markdown("### 04 / Key Findings")
     if not isinstance(trend_results, dict):
         trend_results = {}
     for key, title in (("ndvi", "Vegetation"), ("rainfall", "Rainfall")):
@@ -195,22 +191,21 @@ def _verdict(trend_results, mystery_result):
         st.write(f"**{title}:** {outcome}.")
     if isinstance(mystery_result, dict):
         if mystery_result.get("model_status") in {"insufficient_evidence", "unreliable", "failed"}:
-            st.warning("Mystery verdict: Insufficient evidence.")
+            pass  # Validation warning is already displayed in Anomaly Check.
         elif mystery_result.get("model_status") in (None, "not_evaluated"):
             st.info("Mystery verdict: Pending analysis.")
         elif mystery_result.get("verdict"):
             st.write("**Mystery verdict:** " + str(mystery_result["verdict"]))
-    st.caption(
-        "Scientific limitations: study-area resolution, missing observations, "
-        "model validation, and unmeasured factors may affect interpretation. "
-        "Coinciding changes do not establish cause and effect."
-    )
+    with st.expander("Interpretation limits"):
+        st.write(
+            "Resolution differences, missing observations and unmeasured "
+            "environmental factors can affect results. These trends do not establish causation."
+        )
 
 
 def render_dashboard(ndvi_df, rainfall_df, trend_results: dict, mystery_result: dict) -> None:
     """Render evidence charts, supplied statistical metrics, mystery and verdict."""
-    st.markdown("### 02 / Evidence Lab")
-    st.caption("Annual observations • selected study area and years provided by app.py")
+    st.markdown("### 02 / Observed Changes")
     col_ndvi, col_rain = st.columns(2)
     with col_ndvi:
         _chart(ndvi_df, "ndvi", "Vegetation index", "line", LEAF, "NDVI (unitless)")
@@ -221,7 +216,6 @@ def render_dashboard(ndvi_df, rainfall_df, trend_results: dict, mystery_result: 
         trend_results = {}
     _trend_metrics("Vegetation", trend_results.get("ndvi"), "NDVI")
     _trend_metrics("Rainfall", trend_results.get("rainfall"), "mm")
-    st.caption("The statistical team provides test results. A slope alone is not a fitted trend line.")
     st.divider()
     _mystery(mystery_result)
     st.divider()
