@@ -230,17 +230,9 @@ with details_col:
             "Rain slope / decade",
             f"{rain_trend['slope_per_decade']:+.1f} mm" if rain_trend["slope_per_decade"] is not None else "N/A",
         )
-    def label_trend(r: dict) -> str:
-        if r["status"] != "success":
-            return "Insufficient observations"
-        if r["significant"]:
-            return "Statistically supported " + r["direction"]
-        return "Not statistically significant"
-    st.write(f"**NDVI:** {label_trend(nd_trend)}")
-    st.write(f"**Rainfall:** {label_trend(rain_trend)}")
     st.caption(
-        "Significance uses a prototype Mann–Kendall test (α = 0.05). "
-        "Its assumptions and limitations matter; significance does not prove a cause."
+        "Annual values and decade slopes are calculated from the uploaded "
+        "NDVI and rainfall CSVs. A trend estimate does not change the source data."
     )
 
 st.divider()
