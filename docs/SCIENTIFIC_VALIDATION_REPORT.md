@@ -74,9 +74,11 @@ This substantially clarifies the methodology actually represented in the supplie
 | --- | --- | --- |
 | Original Earth Engine project, task history and task IDs | **PARTIAL** — three completed task IDs and start times shown; supplied source text matches repository export logic | Preserve task-specific script revisions, project association and Drive export links; see `docs/OBSERVED_EARTH_ENGINE_TASKS.md` |
 | Original completed task output CSVs | **PARTIAL** — user-shared local comparison reported MATCH for 40 NDVI rows and 40 rainfall rows | Keep original Drive task links/files and independently verify correspondence to those task IDs |
-| Original `areaA` imported geometry and export match | **PARTIAL** — user-shared comparison of exported GeoJSON reported matching feature IDs/coordinates | Confirm the actual task source script used the original `areaA` polygon import |
+| Original `areaA` imported geometry and export match | **PARTIAL** — user-shared GeoJSON comparison reported matching IDs/coordinates; screenshot now also shows a current `areaA` MultiPolygon with two coordinate elements and index 0/1 selection | Confirm identical import coordinates at the completed task's execution or independently rerun on documented polygon coordinates |
 | Independent Earth Engine reproduction | **MISSING** | Execute documented export script on the same imported polygon and reconcile outputs |
 | Reviewer sign-off and documented field/land-use classifications | **MISSING** | Named reviewer, UTC date, methods and conclusions |
+
+**Additional geometry screenshot (2026-11-15):** The Code Editor's Imports panel shows `var areaA: MultiPolygon, 15 vertices`, with `coordinates: List (2 elements)`. The visible script splits coordinate indexes 0/1 into `studyA` and `studyB`, and the map visually shows two polygons near Jericho. This validates the currently displayed import configuration, not the precise historical input coordinates of the completed export task. See `docs/OBSERVED_EARTH_ENGINE_TASKS.md`.
 
 **Update on 2026-11-15:** The supplied Earth Engine screenshots document three completed export tasks. The user separately ran the original-file comparison and reported MATCH for both 40-row tables and the two polygon geometries. This strengthens the provenance trail but does not yet independently link each Drive file to its task ID or establish a reproducible rerun. See `docs/OBSERVED_EARTH_ENGINE_TASKS.md`.
 
