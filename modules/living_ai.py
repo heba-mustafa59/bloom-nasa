@@ -90,7 +90,7 @@ def interrogate(data: MissionData, area: str, hypothesis: str, years: tuple[int,
         notes = json.loads(text)
         if (not isinstance(notes, dict) or set(notes) != set(KEYS)
                 or any(not isinstance(notes[key], str) or not (8 <= len(notes[key]) <= 600)
-                       or re.search(r"\\d", notes[key]) for key in KEYS)):
+                       or re.search(r"[0-9]", notes[key]) for key in KEYS)):
             raise ValueError("Model output failed scientific safety validation")
         return {**facts, "engine": "Deterministic facts + restricted connected model critique",
                 "llm_status": "connected", "llm_notes": notes}
