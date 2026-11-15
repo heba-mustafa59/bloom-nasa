@@ -129,7 +129,7 @@ def render(ctx, navigate) -> None:
     )
 
     if not ctx.ready:
-        st.info("Study data are currently unavailable for this pilot; no observations are invented.")
+        st.info("Study data are unavailable. Check the uploaded files and try again.")
         if ctx.error:
             with st.expander("Data loading information"):
                 st.code(ctx.error)
@@ -138,7 +138,7 @@ def render(ctx, navigate) -> None:
     data = CaseData(ctx.ndvi_df, ctx.rainfall_df, ctx.geojson, ctx.metadata)
 
     if not data.verified:
-        with st.expander("📁 Uploaded study observations — source information", expanded=False):
+        with st.expander("Data source and verification status", expanded=False):
             st.write(
                 "Values are read from the uploaded NDVI and rainfall CSV files. "
                 "The original Earth Engine export provenance remains pending independent review. "
@@ -378,14 +378,14 @@ def render(ctx, navigate) -> None:
         + action_report
     )
     st.download_button(
-        "⬇️ Download investigation + recommendation (.md)",
+        "Download investigation report",
         data=report.encode("utf-8"),
         file_name=f"BLOOM_{ctx.area_id}_{goal}_{year}.md",
         mime="text/markdown",
         key="bloom_explore_report_download",
         type="primary",
     )
-    with st.expander("Preview the investigation brief"):
+    with st.expander("Read the investigation brief"):
         st.code(report, language="markdown")
 
     a, b = st.columns(2, gap="medium")
