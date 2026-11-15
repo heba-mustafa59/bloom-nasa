@@ -174,6 +174,8 @@ def build_map(
         raise ValueError("Year must be 2005–2024")
 
     verified = isinstance(metadata, dict) and metadata.get("verification_status") == "verified"
+    provisional = isinstance(metadata, dict) and metadata.get("verification_status") == "pending"
+    show_data = verified or provisional
     features = _valid_features(study_areas)
     locations = list(REFERENCE_SITES.values())
     center = [sum(p["lat"] for p in locations) / len(locations),
@@ -206,8 +208,8 @@ def build_map(
         item = dict(feat)
         props = dict(feat["properties"])
         area_id = props["area_id"]
-        ndvi = _reading(ndvi_df, area_id, selected_year, "ndvi") if verified else None
-        rain = _reading(rainfall_df, area_id, selected_year, "rainfall_mm") if verified else None
+        ndvi = _reading(ndvi_df, area_id, selected_year, "ndvi") if show_data else None
+        rain = _reading(rainfall_df, area_id, selected_year, "rainfall_mm") if show_data else None
         props.update({
             "ndvi_value": ndvi,
             "ndvi_label": f"{ndvi:.4f}" if ndvi is not None else "Unavailable / unverified",
@@ -224,18 +226,19 @@ def build_map(
             props = feature["properties"]
             active = props["area_id"] == selected_area_id
             fill = (_ndvi_color(props["ndvi_value"])
-                    if mode == "Annual NDVI" and verified and selected_year is not None
+                    if mode == "Annual NDVI" and show_data and selected_year is not None
                     else COLORS["amber"] if active else COLORS["leaf"])
             return {
                 "color": COLORS["forest"] if active else COLORS["leaf"],
                 "weight": 4 if active else 2, "fillColor": fill,
-                "fillOpacity": (0.56 if mode == "Annual NDVI" and verified and selected_year is not None
+                "fillOpacity": (0.56 if mode == "Annual NDVI" and show_data and selected_year is not None
                                 else 0.34 if active else 0.16),
             }
 
         geo_layer = folium.GeoJson(
             {"type": "FeatureCollection", "features": enhanced},
-            name="Annual data" if verified else "Unverified study polygons",
+            name=("Provisional annual observations" if provisional else "Annual data")
+            if show_data else "Unverified study polygons",
             style_function=style_fn,
             highlight_function=lambda _: {"weight": 5, "fillOpacity": 0.72},
             tooltip=folium.GeoJsonTooltip(
@@ -321,7 +324,7 @@ def build_map(
     if show_mini_map:
         MiniMap(position="bottomleft", toggle_display=True, width=140, height=105).add_to(fmap)
     folium.LayerControl(collapsed=True, position="topright").add_to(fmap)
-    if mode == "Annual NDVI" and verified and selected_year is not None and enhanced:
+    if mode == "Annual NDVI" and show_data and selected_year is not None and enhanced:
         legend = """<div style="position:fixed;bottom:22px;right:16px;z-index:9999;
         background:white;padding:10px 12px;border-radius:10px;
         box-shadow:0 3px 14px #3336;font:12px Arial;max-width:185px">
@@ -355,12 +358,16 @@ def render_map(
     raw_count = (len(study_areas.get("features", [])) if isinstance(study_areas, dict)
                  and isinstance(study_areas.get("features"), list) else 0)
     verified = isinstance(metadata, dict) and metadata.get("verification_status") == "verified"
+    provisional = isinstance(metadata, dict) and metadata.get("verification_status") == "pending"
+    show_data = verified or provisional
     if not features:
         st.info("No valid study polygons loaded. Showing reference locations only — not NASA sampling areas.")
     elif raw_count != len(features) or len(features) < 2:
         st.warning("Some study polygons are missing or invalid. Confirm NASA GeoJSON exports.")
-    if not verified:
-        st.warning("Annual NASA observations are unavailable/unverified; no numerical values are shown.")
+    if provisional:
+        st.warning("Uploaded annual observations are displayed provisionally. Original NASA export and polygon matching are not independently verified.")
+    elif not verified:
+        st.warning("Annual observations are unavailable or unverified; no numerical values are shown.")
 
     col1, col2, col3 = st.columns([2, 2, 2])
     with col1:
@@ -461,7 +468,7 @@ def render_map(
             pass
 
     st.markdown("##### Selected polygon: " + AREA_NAMES[selected_area_id])
-    if verified:
+    if show_data:
         v_ndvi = _reading(ndvi_df, selected_area_id, year, "ndvi")
         v_rain = _reading(rainfall_df, selected_area_id, year, "rainfall_mm")
         left, right = st.columns(2)
@@ -469,6 +476,11 @@ def render_map(
             st.metric(f"NDVI · {year}", f"{v_ndvi:.4f}" if v_ndvi is not None else "N/A")
         with right:
             st.metric(f"Rainfall · {year}", f"{v_rain:.1f} mm" if v_rain is not None else "N/A")
-        st.caption("Numbers are annual polygon aggregates, NOT pixel-resolution NDVI or rainfall maps.")
+        st.caption(
+            "Uploaded annual polygon aggregates (provisional: export provenance pending). "
+            "These are NOT pixel-resolution NDVI or rainfall maps."
+            if provisional else
+            "Annual polygon aggregates, NOT pixel-resolution NDVI or rainfall maps."
+        )
     else:
         st.caption("Upload verified NDVI/rainfall CSV + metadata and exported GeoJSON to enable yearly measurements.")
