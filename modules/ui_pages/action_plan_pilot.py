@@ -63,7 +63,7 @@ def render_action_pathway(data: CaseData, recommendation, selected_area_id: str)
         )
     with b:
         signal = st.selectbox(
-            "Optional field clue — reported by the user, not verified",
+            "Field observation (unverified)",
             list(FIELD_SIGNALS),
             format_func=FIELD_SIGNALS.get,
             key=f"bloom_action_clue_{recommendation.goal}_{recommendation.year}_{target_area}",
@@ -115,7 +115,7 @@ def render_action_pathway(data: CaseData, recommendation, selected_area_id: str)
 
     report = action_plan_markdown(data, plan, tuple(checked))
     st.download_button(
-        "⬇️ Download field-ready action plan",
+        "Download field action plan",
         data=report.encode("utf-8"),
         file_name=f"BLOOM_action_plan_{target_area}_{recommendation.goal}_{plan.year}.md",
         mime="text/markdown",
