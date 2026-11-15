@@ -66,3 +66,20 @@ python -m streamlit run ui_app.py --server.port 8503
 5. You can still switch to **Synthetic demo** for UI testing.
 
 Safety: `modules/data_loader.py`, `modules/ui_data.py`, original source data and `app.py` were NOT changed. Uploaded records are used unchanged, and `metadata.json` retains `pending` provenance status. **This is not a land-suitability score or a field diagnosis.**
+
+
+## Judge-facing Discovery + Time Machine (branch only)
+
+- **Home → Case 001:** Data-derived 2005/2024 NDVI comparison and the observed reversal in which study polygon has the higher recorded annual mean. Click **Investigate this discovery** to jump into Explore at 2005.
+- **Explore → Time Machine:** Scroll or step between **2005 and 2024** using the slider, previous/next controls and instant endpoint buttons. The fills of Area A/B update with annual polygon-mean NDVI using a fixed color scale; thicker border shows which polygon is selected.
+- **Before & After:** Inspect per-area changes relative to 2005 plus a grouped 2005/current-year comparison, followed by the existing full twenty-year charts.
+- The values come from the original uploaded NDVI CSV, not a satellite pixel map or fabricated interpolation. Any claim about the causes of change requires separate evidence.
+- The **Area Advisor** and downloaded report remain available later in Explore. All existing source files, strict data loader and `main` branch remain untouched.
+
+To view the integration in Codespaces after committing any local work:
+
+```bash
+git switch feature/investigation-case-pilot
+git pull --ff-only origin feature/investigation-case-pilot
+python -m streamlit run ui_app.py --server.address 0.0.0.0 --server.port 8503
+```
