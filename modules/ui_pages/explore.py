@@ -45,7 +45,7 @@ def render(ctx, navigate):
                 if ctx.geojson.get("features")
                 else "Pending"
             ),
-            "Verified GeoJSON polygons only",
+            "Supplied polygons · provenance pending" if ctx.is_provisional else "GeoJSON study polygons",
             "sky",
         )
 
@@ -64,6 +64,7 @@ def render(ctx, navigate):
         ndvi_df=ctx.ndvi_df if not ctx.is_demo else None,
         rainfall_df=ctx.rainfall_df if not ctx.is_demo else None,
         metadata=ctx.metadata if not ctx.is_demo else {},
+        selected_year=ctx.end_year,
     )
 
     section_title(
