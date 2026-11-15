@@ -150,8 +150,8 @@ def render(ctx, navigate):
     )
 
     st.caption(
-        "Integration can replace this self-contained "
-        "preview with modules/report_generator.py "
-        "once its implementation is ready."
+        "This brief is generated from the currently selected "
+        "observations. Source verification is required "
+        "before citing uploaded data as confirmed NASA exports."
     )
 
