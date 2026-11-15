@@ -66,7 +66,7 @@ python scripts/validate_science.py --report /tmp/bloom_science_audit.md --json /
 
 The user supplied the Earth Engine JavaScript following the request to inspect the source script of the completed export tasks. The core export logic **matches** `scripts/export_nasa_data.js` as checked into GitHub (study geometry split, MODIS/GPM collections, QA and scaling, annual reductions, task names and export columns). The pasted version adds several `print()` diagnostics for record counts, coverage and 2024 values, which do not alter data generation.
 
-This substantially clarifies the methodology actually represented in the supplied source text. Nevertheless, a pasted script alone cannot establish that the original completed tasks executed **that exact saved revision** or that their imported `areaA` geometry was identical at run time. Preserve task-specific `Source Script` links, asset import and Drive export IDs to close those evidentiary gaps. More details: `docs/OBSERVED_EARTH_ENGINE_TASKS.md`.
+This substantially clarifies the methodology actually represented in the supplied source text. A user-supplied Code Editor URL (https://code.earthengine.google.com/8b38830576de84dc8d3eb6877b3dd2ac) has also been recorded, **but its remote contents could not be fetched independently**. Neither a pasted script nor an uninspected shared link establishes that the completed tasks executed **that exact saved revision**, or that their imported `areaA` geometry was identical at run time. Preserve task-specific `Source Script` links, asset import and Drive export IDs to close those evidentiary gaps. More details: `docs/OBSERVED_EARTH_ENGINE_TASKS.md`.
 
 ## 5. Verification items that still require human-supplied evidence
 
