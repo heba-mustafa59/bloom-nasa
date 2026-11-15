@@ -26,7 +26,7 @@ def render(ctx, navigate):
         stat_card(
             "FOCUS AREA",
             AREA_LABELS[ctx.area_id],
-            "Select a region in Research controls",
+            "Select an area in the study controls above",
         )
 
     with mid:
@@ -45,15 +45,15 @@ def render(ctx, navigate):
                 if ctx.geojson.get("features")
                 else "Pending"
             ),
-            "Verified GeoJSON polygons only",
+            "Supplied polygons · provenance pending" if ctx.is_provisional else "GeoJSON study polygons",
             "sky",
         )
 
     section_title(
         "THE MAP",
         "Geography comes first",
-        "The map does not imply exact boundaries until "
-        "the verified polygons are supplied.",
+        "The map shows the supplied polygons, but their provenance "
+        "must still be confirmed.",
     )
 
     # Draw-enabled map remains available even when NASA data is missing.
@@ -64,6 +64,7 @@ def render(ctx, navigate):
         ndvi_df=ctx.ndvi_df if not ctx.is_demo else None,
         rainfall_df=ctx.rainfall_df if not ctx.is_demo else None,
         metadata=ctx.metadata if not ctx.is_demo else {},
+        selected_year=ctx.end_year,
     )
 
     section_title(

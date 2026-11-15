@@ -174,6 +174,8 @@ def build_map(
         raise ValueError("Year must be 2005–2024")
 
     verified = isinstance(metadata, dict) and metadata.get("verification_status") == "verified"
+    provisional = isinstance(metadata, dict) and metadata.get("verification_status") == "pending"
+    show_data = verified or provisional
     features = _valid_features(study_areas)
     locations = list(REFERENCE_SITES.values())
     center = [sum(p["lat"] for p in locations) / len(locations),
@@ -206,8 +208,8 @@ def build_map(
         item = dict(feat)
         props = dict(feat["properties"])
         area_id = props["area_id"]
-        ndvi = _reading(ndvi_df, area_id, selected_year, "ndvi") if verified else None
-        rain = _reading(rainfall_df, area_id, selected_year, "rainfall_mm") if verified else None
+        ndvi = _reading(ndvi_df, area_id, selected_year, "ndvi") if show_data else None
+        rain = _reading(rainfall_df, area_id, selected_year, "rainfall_mm") if show_data else None
         props.update({
             "ndvi_value": ndvi,
             "ndvi_label": f"{ndvi:.4f}" if ndvi is not None else "Unavailable / unverified",
@@ -224,18 +226,19 @@ def build_map(
             props = feature["properties"]
             active = props["area_id"] == selected_area_id
             fill = (_ndvi_color(props["ndvi_value"])
-                    if mode == "Annual NDVI" and verified and selected_year is not None
+                    if mode == "Annual NDVI" and show_data and selected_year is not None
                     else COLORS["amber"] if active else COLORS["leaf"])
             return {
                 "color": COLORS["forest"] if active else COLORS["leaf"],
                 "weight": 4 if active else 2, "fillColor": fill,
-                "fillOpacity": (0.56 if mode == "Annual NDVI" and verified and selected_year is not None
+                "fillOpacity": (0.56 if mode == "Annual NDVI" and show_data and selected_year is not None
                                 else 0.34 if active else 0.16),
             }
 
         geo_layer = folium.GeoJson(
             {"type": "FeatureCollection", "features": enhanced},
-            name="Annual data" if verified else "Unverified study polygons",
+            name=("Provisional annual observations" if provisional else "Annual data")
+            if show_data else "Unverified study polygons",
             style_function=style_fn,
             highlight_function=lambda _: {"weight": 5, "fillOpacity": 0.72},
             tooltip=folium.GeoJsonTooltip(
@@ -321,7 +324,7 @@ def build_map(
     if show_mini_map:
         MiniMap(position="bottomleft", toggle_display=True, width=140, height=105).add_to(fmap)
     folium.LayerControl(collapsed=True, position="topright").add_to(fmap)
-    if mode == "Annual NDVI" and verified and selected_year is not None and enhanced:
+    if mode == "Annual NDVI" and show_data and selected_year is not None and enhanced:
         legend = """<div style="position:fixed;bottom:22px;right:16px;z-index:9999;
         background:white;padding:10px 12px;border-radius:10px;
         box-shadow:0 3px 14px #3336;font:12px Arial;max-width:185px">
@@ -345,8 +348,8 @@ def render_map(
     import streamlit as st
     from streamlit_folium import st_folium
 
-    st.markdown("### 01 / BLOOM Earth Explorer · مستكشف أريحا")
-    st.caption("ارسمِي بقعة مرشحة خضراء أو جافة، واحفظيها للمراجعة. التصنيف اليدوي ليس نتيجة NASA.")
+    st.markdown("### BLOOM Earth Explorer")
+    st.caption("Use the optional polygon tool to mark potential patches for field review. Manual annotations are not NASA classifications.")
     st.caption("Tell es-Sultan & Al-Auja are reference pins. Polygons come only from the supplied GeoJSON.")
     if selected_area_id not in AREA_NAMES:
         st.warning("Choose a valid study polygon in the main application.")
@@ -355,21 +358,25 @@ def render_map(
     raw_count = (len(study_areas.get("features", [])) if isinstance(study_areas, dict)
                  and isinstance(study_areas.get("features"), list) else 0)
     verified = isinstance(metadata, dict) and metadata.get("verification_status") == "verified"
+    provisional = isinstance(metadata, dict) and metadata.get("verification_status") == "pending"
+    show_data = verified or provisional
     if not features:
         st.info("No valid study polygons loaded. Showing reference locations only — not NASA sampling areas.")
     elif raw_count != len(features) or len(features) < 2:
         st.warning("Some study polygons are missing or invalid. Confirm NASA GeoJSON exports.")
-    if not verified:
-        st.warning("Annual NASA observations are unavailable/unverified; no numerical values are shown.")
+    if provisional:
+        st.warning("Uploaded annual observations are displayed provisionally. Original NASA export and polygon matching are not independently verified.")
+    elif not verified:
+        st.warning("Annual observations are unavailable or unverified; no numerical values are shown.")
 
     col1, col2, col3 = st.columns([2, 2, 2])
     with col1:
-        focus_name = st.selectbox("🧭 الانتقال إلى", ["Both sites", "Selected polygon", "Tell es-Sultan", "Al-Auja"],
+        focus_name = st.selectbox("Map focus", ["Both sites", "Selected polygon", "Tell es-Sultan", "Al-Auja"],
                                   key="bloom_map_focus")
     with col2:
-        basemap = st.selectbox("🗺️ نمط الخريطة", BASEMAPS, key="bloom_map_basemap")
+        basemap = st.selectbox("Base map", BASEMAPS, key="bloom_map_basemap")
     with col3:
-        mode = st.selectbox("🌱 طبقة البيانات", MODES, key="bloom_map_mode")
+        mode = st.selectbox("Map layer", MODES, key="bloom_map_mode")
     a, b, c = st.columns(3)
     with a:
         pins = st.checkbox("Show place pins", value=True, key="bloom_map_pins")
@@ -379,27 +386,27 @@ def render_map(
         mini = st.checkbox("Show mini-map", value=False, key="bloom_map_minimap")
 
     if selected_year is None:
-        year = st.slider("📅 السنة", 2005, 2024, 2024, key="bloom_map_year")
+        year = st.slider("Year", 2005, 2024, 2024, key="bloom_map_year")
     else:
         year = int(selected_year)
-        st.caption(f"Year selected in app.py: {year}")
+        st.caption(f"Displaying year: {year}")
     focus = {"Both sites": "overview", "Selected polygon": "selected",
              "Tell es-Sultan": "tell_sultan", "Al-Auja": "al_auja"}[focus_name]
     if "bloom_candidate_patches" not in st.session_state:
         st.session_state["bloom_candidate_patches"] = []
     patches = st.session_state["bloom_candidate_patches"]
-    st.markdown("#### ✏️ تحديد بقع خضراء أو جافة (يدويًا)")
+    st.markdown("#### Field annotations (optional)")
     choose_col, name_col = st.columns(2)
     with choose_col:
         class_choice = st.selectbox(
-            "نوع البقعة التي تريدين حفظها",
+            "Candidate patch type",
             ["vegetated_candidate", "dry_candidate"],
-            format_func=lambda c: "🌿 خضراء مرشحة" if c == "vegetated_candidate" else "🏜️ جافة مرشحة",
+            format_func=lambda c: "Vegetation candidate" if c == "vegetated_candidate" else "Dry area candidate",
             key="bloom_candidate_kind",
         )
     with name_col:
-        patch_name = st.text_input("اسم البقعة (اختياري)", key="bloom_candidate_name")
-    st.caption("اضغطي أداة المضلع في الخريطة (شكل خماسي)، ارسمي حدود البقعة، ثم اضغطي حفظ آخر مضلع. البقع لا تُرسل إلى GitHub تلقائيًا.")
+        patch_name = st.text_input("Patch label (optional)", key="bloom_candidate_name")
+    st.caption("Use the polygon drawing tool on the map, then save your drawn patch below. These annotations stay in your session; they are not uploaded automatically.")
 
     fmap = build_map(study_areas, selected_area_id, ndvi_df=ndvi_df,
                      rainfall_df=rainfall_df, metadata=metadata, selected_year=year,
@@ -416,11 +423,11 @@ def render_map(
 
     save_col, clear_col = st.columns(2)
     with save_col:
-        if st.button("💾 حفظ آخر بقعة مرسومة", key="bloom_patch_save"):
+        if st.button("Save drawn patch", key="bloom_patch_save"):
             drawing = state.get("last_active_drawing") if isinstance(state, dict) else None
             geometry = drawing.get("geometry") if isinstance(drawing, dict) else None
             if _polygon_points(geometry) is None:
-                st.warning("ارسمي مضلعًا داخل منطقة أريحا أولًا. النقاط والخطوط وحدها لا تكفي.")
+                st.warning("Draw a polygon around the relevant location first; points and lines cannot be saved as a patch.")
             else:
                 new_feature = {
                     "type": "Feature", "geometry": geometry,
@@ -431,26 +438,26 @@ def render_map(
                     },
                 }
                 if any(item["geometry"] == geometry for item in patches):
-                    st.warning("هذه البقعة محفوظة سابقًا. ارسمي بقعة جديدة.")
+                    st.warning("This polygon is already saved. Draw a different one.")
                 else:
                     patches.append(new_feature)
                     st.rerun()
     with clear_col:
-        if st.button("🗑️ مسح البقع المحفوظة", key="bloom_patch_clear", disabled=not patches):
+        if st.button("Clear saved patches", key="bloom_patch_clear", disabled=not patches):
             st.session_state["bloom_candidate_patches"] = []
             st.rerun()
 
     if patches:
         import json
         st.download_button(
-            "⬇️ تنزيل البقع المرشحة للمراجعة (GeoJSON)",
+            "Download field annotations (GeoJSON)",
             data=json.dumps({"type": "FeatureCollection", "features": patches},
                             ensure_ascii=False, indent=2),
             file_name="candidate_patches_FOR_REVIEW.geojson",
             mime="application/geo+json",
             key="bloom_patch_download",
         )
-        st.caption(f"عدد البقع المحفوظة: {len(patches)} — بقع يدوية غير موثّقة؛ لا تستخدميها كملف study_areas.geojson قبل المراجعة.")
+        st.caption(f"Saved candidate patches: {len(patches)} — unverified manual annotations; do not use these as study_areas.geojson without independent review.")
 
     st.caption("Zoom +/− · Satellite · Fullscreen · Measure distance/area · Coordinate finder · Layer control")
     if isinstance(state, dict) and isinstance(state.get("last_clicked"), dict):
@@ -461,7 +468,7 @@ def render_map(
             pass
 
     st.markdown("##### Selected polygon: " + AREA_NAMES[selected_area_id])
-    if verified:
+    if show_data:
         v_ndvi = _reading(ndvi_df, selected_area_id, year, "ndvi")
         v_rain = _reading(rainfall_df, selected_area_id, year, "rainfall_mm")
         left, right = st.columns(2)
@@ -469,6 +476,11 @@ def render_map(
             st.metric(f"NDVI · {year}", f"{v_ndvi:.4f}" if v_ndvi is not None else "N/A")
         with right:
             st.metric(f"Rainfall · {year}", f"{v_rain:.1f} mm" if v_rain is not None else "N/A")
-        st.caption("Numbers are annual polygon aggregates, NOT pixel-resolution NDVI or rainfall maps.")
+        st.caption(
+            "Uploaded annual polygon aggregates (provisional: export provenance pending). "
+            "These are NOT pixel-resolution NDVI or rainfall maps."
+            if provisional else
+            "Annual polygon aggregates, NOT pixel-resolution NDVI or rainfall maps."
+        )
     else:
         st.caption("Upload verified NDVI/rainfall CSV + metadata and exported GeoJSON to enable yearly measurements.")

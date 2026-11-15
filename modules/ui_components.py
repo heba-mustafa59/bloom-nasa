@@ -114,8 +114,8 @@ def availability(ctx) -> bool:
         return True
 
     st.info(
-        "**Data unavailable.** No verified NASA "
-        "observations could be loaded for this view."
+        "**Data unavailable.** No usable "
+        "observations were loaded for this selection."
     )
 
     if ctx.error:
@@ -123,8 +123,8 @@ def availability(ctx) -> bool:
             st.code(ctx.error)
 
     st.caption(
-        "Switch to Synthetic demo in Research Controls "
-        "to explore the interface. Demo values are not "
+        "Select a different source above, or use Synthetic demo "
+        "for interface testing. Demo values are not "
         "NASA measurements."
     )
 
@@ -145,11 +145,25 @@ def data_label(ctx) -> None:
             ''',
             unsafe_allow_html=True,
         )
+    elif ctx.is_provisional:
+        st.markdown(
+            '''
+            <div class="bloom-data-ribbon provisional">
+                <b>PROVENANCE PENDING</b>
+                <span>
+                    Original uploaded CSV observations are displayed for
+                    review. Their NASA export origin and exact sampling
+                    polygons have not been independently confirmed.
+                </span>
+            </div>
+            ''',
+            unsafe_allow_html=True,
+        )
     else:
         st.markdown(
             '''
             <div class="bloom-data-ribbon real">
-                <b>NASA MODE</b>
+                <b>VERIFIED MODE</b>
                 <span>
                     Verified-source mode. Unavailable
                     or invalid data will not be replaced.

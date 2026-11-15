@@ -64,3 +64,21 @@ def test_reject_duplicate(tmp_path):
     df.to_csv(path, index=False)
     with pytest.raises(ValueError, match='Duplicate'):
         load_datasets(tmp_path)
+
+def test_pending_upload_rejected_in_strict_mode_but_available_for_review(tmp_path):
+    """Pending NASA provenance is not a reason to fabricate or erase CSV rows."""
+    _write_data(tmp_path)
+    path = tmp_path / "metadata.json"
+    metadata = json.loads(path.read_text())
+    metadata["verification_status"] = "pending"
+    path.write_text(json.dumps(metadata))
+
+    with pytest.raises(ValueError, match="independently verified"):
+        load_datasets(tmp_path)
+
+    ndvi, rainfall, polygons, loaded_metadata = load_datasets(
+        tmp_path, require_verified=False
+    )
+    assert len(ndvi) == len(rainfall) == 40
+    assert len(polygons["features"]) == 2
+    assert loaded_metadata["verification_status"] == "pending"

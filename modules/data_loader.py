@@ -43,8 +43,13 @@ def _validate_table(df: pd.DataFrame, value_col: str, other_cols: set[str]) -> p
     return result.sort_values(['area_id', 'year']).reset_index(drop=True)
 
 
-def load_datasets(data_dir: str | Path | None = None):
-    """Return (ndvi_df, rainfall_df, study_areas_geojson, metadata)."""
+def load_datasets(data_dir: str | Path | None = None, *, require_verified: bool = True):
+    """Return the original uploaded observations, polygons and metadata.
+
+    By default, reject exports whose provenance is not independently verified.
+    UI review mode may set require_verified=False to *inspect* documented
+    pending data, but must identify all results as provisional.
+    """
     folder = Path(data_dir) if data_dir is not None else ROOT / 'data'
     paths = {name: folder / name for name in
              ('ndvi_annual.csv', 'rainfall_annual.csv', 'study_areas.geojson', 'metadata.json')}
@@ -67,7 +72,12 @@ def load_datasets(data_dir: str | Path | None = None):
         raise ValueError('GeoJSON area_id must match area_a and area_b')
     with open(paths['metadata.json'], encoding='utf-8') as f:
         metadata = json.load(f)
-    if not isinstance(metadata, dict) or metadata.get('verification_status') != 'verified':
+    if not isinstance(metadata, dict):
+        raise ValueError('metadata.json must contain an object')
+    status = metadata.get('verification_status')
+    if status not in ('pending', 'verified'):
+        raise ValueError('metadata.json must declare a known verification_status')
+    if require_verified and status != 'verified':
         raise ValueError('metadata.json must explicitly mark independently verified exports')
     return ndvi, rainfall, shapes, metadata
 
