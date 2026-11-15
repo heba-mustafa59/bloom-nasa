@@ -19,7 +19,7 @@ from modules.ui_components import page_header, section_title, style_figure
 from modules.living_data import load_mission_data
 from modules.living_missions import (
     ACTIONS, HYPOTHESES, mission_catalog, new_case, record_case_step,
-    endpoint_change, evidence_cards, trends, impact_passport,
+    endpoint_change, evidence_cards, trends, impact_passport, explain_investigation,
 )
 from modules.living_ai import connected_key, interrogate
 from modules.living_groundtruth import (
@@ -207,7 +207,7 @@ def render(ctx, navigate):
             _change("hypothesis", choice)
             st.rerun()
         selected = case["hypothesis"] or choice
-        explanation = interrogate(data, area, selected, (year_a, year_b), key=None)
+        explanation = explain_investigation(data, area, selected, (year_a, year_b))
         st.caption(f"Engine: {explanation['engine']}")
         for key, heading_label in [
             ("observed", "OBSERVED"), ("supported_by", "EVIDENCE / SOURCE"),
