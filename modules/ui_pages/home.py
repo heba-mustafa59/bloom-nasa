@@ -97,8 +97,8 @@ def render(ctx, navigate):
                 ):
                     navigate("Analytics")
 
-    with right:
-                with st.container(key="bloom_data_panel"):
+        with right:
+            with st.container(key="bloom_data_panel"):
                 status = (
                     "SYNTHETIC DEMO"
                     if ctx.is_demo else
