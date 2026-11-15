@@ -237,3 +237,17 @@ def test_bad_inputs_cannot_mutate_case_or_extract_data(data):
                          "evidence", "fictional_evidence")
     with pytest.raises(ValueError):
         data.observation("area_c", 2024)
+
+
+def test_compare_allows_validated_research_preview():
+    """Compare real local CSV values while maintaining PENDING provenance."""
+    from modules.comparison import annual_series, compare_regions
+    ctx = load_ui_context("local", "area_a", 2005, 2024)
+    assert ctx.ready and ctx.metadata["verification_status"] == "pending"
+    series = annual_series(ctx, "ndvi", "area_a", 2005, 2024)
+    assert series.loc[series.year == 2005, "ndvi"].iloc[0] == pytest.approx(
+        0.16515122987658773
+    )
+    result = compare_regions(ctx, ("area_a", "area_b"), "ndvi", 2005, 2024)
+    assert result["status"] != "unavailable"
+    assert result["common_years"] == list(range(2005, 2025))
