@@ -1053,19 +1053,3 @@ p {
     font-size: 1.55rem;
   }
 }
-
-/* Earth Comparison Explorer: quiet emphasis, keyboard-visible controls. */
-.earth-verdict {
-  border-left: 4px solid #D99A56;
-  background: linear-gradient(110deg, #eaf0e8, #faf5eb);
-  padding: 1.2rem 1.6rem;
-  border-radius: 0 16px 16px 0;
-  color: #163D2E;
-  letter-spacing: .13em;
-  font-size: .8rem;
-  transition: box-shadow .2s ease;
-}
-.earth-verdict:hover { box-shadow: 0 8px 26px #163d2e12; }
-@media (prefers-reduced-motion: reduce) {
-  .earth-verdict { transition: none; }
-}
