@@ -1,0 +1,40 @@
+name: NASA science validation (non-UI)
+on:
+  push:
+    branches: [fix/nasa-science-validation]
+  workflow_dispatch:
+jobs:
+  science-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install scientific dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile audit (no UI files)
+        run: python -m py_compile scripts/validate_science.py
+      - name: Check Earth Engine reproduction JavaScript syntax
+        run: node --check scripts/reproduce_nasa_gee.js
+      - name: Test source-audit and frozen-geometry safeguards
+        run: python -m pytest tests/test_science_validation.py tests/test_science_rerun_script.py -q
+      - name: Generate audit report to runner artifacts
+        run: python scripts/validate_science.py --report /tmp/bloom_science_audit.md --json /tmp/bloom_science_audit.json
+      - name: Assert main application and data files are unchanged
+        run: |
+          git fetch origin main
+          changed="$(git diff --name-only origin/main...HEAD)"
+          echo "$changed"
+          if echo "$changed" | grep -Ev '^(scripts/(validate_science\.py|reproduce_nasa_gee\.js)|tests/(test_science_validation\.py|test_science_rerun_script\.py)|docs/(SCIENCE_VALIDATION_HANDOFF\.md|SCIENTIFIC_VALIDATION_REPORT\.md|EARTH_ENGINE_EVIDENCE_TEMPLATE\.json|OBSERVED_EARTH_ENGINE_TASKS\.md|SCIENCE_REPRODUCTION_RUNBOOK\.md)|\.github/workflows/nasa-science-validation\.yml)$' | grep -q .; then
+            echo "Unexpected non-science change found"; exit 1;
+          fi
+      - name: Upload audit outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: bloom-science-audit
+          path: |
+            /tmp/bloom_science_audit.md
+            /tmp/bloom_science_audit.json
