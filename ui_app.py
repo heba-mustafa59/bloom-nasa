@@ -132,20 +132,22 @@ def main() -> None:
 
         source = st.radio(
             "Choose data source",
-            ["Synthetic demo", "Verified NASA"],
+            ["Uploaded observations · verification pending", "Verified NASA only", "Synthetic demo"],
             key="bloom_source",
             label_visibility="collapsed",
             help=(
-                "Demo data are invented for UI testing "
-                "and never presented as NASA observations."
+                "Uploaded observations are original repository CSVs, "
+                "but their NASA export provenance is pending. "
+                "Strict mode accepts only independently verified exports. "
+                "Synthetic mode is for UI testing only."
             ),
         )
 
-        mode = (
-            "demo"
-            if source == "Synthetic demo"
-            else "verified"
-        )
+        mode = {
+            "Uploaded observations · verification pending": "review",
+            "Verified NASA only": "verified",
+            "Synthetic demo": "demo",
+        }[source]
 
         st.caption("STUDY AREA")
 
@@ -196,7 +198,7 @@ def main() -> None:
 
     current_page = st.session_state["bloom_page"]
 
-    # Home begins directly with the giant landing headline
+    # Home begins with the study overview
     if current_page != "Home":
         data_label(ctx)
 
