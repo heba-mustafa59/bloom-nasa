@@ -39,6 +39,10 @@ st.markdown(
       color:white; padding:23px 30px; border-radius:18px; margin-bottom:18px}
     .hero h1 {color:white; margin:0; font-size:2.3rem}
     .hero p {color:#e2f0e3; margin:8px 0 0}
+    /* Prevent Arabic/RTL browser settings from reversing the year timeline. */
+    div[data-testid="stSlider"], div[data-testid="stSlider"] * {
+      direction:ltr !important; text-align:left;
+    }
     </style>""",
     unsafe_allow_html=True,
 )
@@ -59,14 +63,19 @@ except (FileNotFoundError, ValueError, OSError, KeyError, TypeError) as exc:
     st.code(str(exc))
     st.stop()
 
+st.caption(
+    "📁 Data source: the uploaded `data/ndvi_annual.csv`, "
+    "`data/rainfall_annual.csv`, and `data/study_areas.geojson`. "
+    "The displayed numbers are read directly from these files, without synthetic replacements."
+)
 if not data.verified:
-    st.warning(
-        "PROVISIONAL DATA — the CSVs and polygons are present, but their original "
-        "Earth Engine extraction provenance has not been independently verified. "
-        "Numbers below are exploratory, not authenticated NASA conclusions."
-    )
-else:
-    st.success("Metadata declares verified data; review the supporting provenance before relying on it.")
+    with st.expander("Data provenance note", expanded=False):
+        st.write(
+            "We use the uploaded study data as requested. "
+            "The project metadata still marks independent verification of the original "
+            "Earth Engine export and polygon provenance as pending. "
+            "This does not change the values in your CSV files."
+        )
 
 if "pilot_area" not in st.session_state or st.session_state.pilot_area not in AREA_NAMES:
     st.session_state.pilot_area = "area_a"
@@ -81,7 +90,16 @@ with top_a:
         help="Pick an existing polygon, or click inside it on the map.",
     )
 with top_b:
-    year = st.slider("Inspection year", min_value=2005, max_value=2024, value=2024, key="pilot_year")
+    year = st.slider(
+        "Inspection year", min_value=2005, max_value=2024,
+        value=2024, step=1, key="pilot_year",
+    )
+    st.markdown(
+        '<div dir="ltr" style="display:flex;justify-content:space-between;'
+        'font-size:12px;color:#526458;margin-top:-9px">'
+        '<span>2005</span><span>2024</span></div>',
+        unsafe_allow_html=True,
+    )
 with top_c:
     basemap = st.selectbox("Map view", ["Satellite", "Streets"], key="pilot_basemap")
 
@@ -112,8 +130,21 @@ with map_col:
         polygons = [geometry["coordinates"]] if geometry["type"] == "Polygon" else geometry["coordinates"]
         for polygon in polygons:
             all_points += [(p[1], p[0]) for p in polygon[0]]
+        # Attach values to the actual GeoJSON feature so polygon clicks show
+        # measurements immediately inside the map, independent of the top menu.
+        polygon_row = annual_series(data, area_id).set_index("year").loc[year]
+        display_feature = {
+            **feature,
+            "properties": {
+                **feature["properties"],
+                "display_name": AREA_NAMES[area_id],
+                "inspection_year": str(year),
+                "ndvi_display": f"{float(polygon_row['ndvi']):.4f}",
+                "rain_display": f"{float(polygon_row['rainfall_mm']):.1f} mm",
+            },
+        }
         folium.GeoJson(
-            feature,
+            display_feature,
             name=AREA_NAMES[area_id],
             style_function=lambda _, selected=active: {
                 "color": "#163d2e" if selected else "#56a36e",
@@ -122,7 +153,15 @@ with map_col:
                 "fillOpacity": 0.4 if selected else 0.22,
             },
             highlight_function=lambda _: {"weight": 5, "fillOpacity": 0.56},
-            tooltip=folium.Tooltip(AREA_NAMES[area_id] + " · select area"),
+            tooltip=folium.GeoJsonTooltip(
+                fields=["display_name", "inspection_year", "ndvi_display", "rain_display"],
+                aliases=["Area:", "Year:", "NDVI:", "Rainfall:"],
+                sticky=True,
+            ),
+            popup=folium.GeoJsonPopup(
+                fields=["display_name", "inspection_year", "ndvi_display", "rain_display"],
+                aliases=["Area:", "Year:", "NDVI:", "Rainfall:"],
+            ),
         ).add_to(fmap)
     if all_points:
         fmap.fit_bounds(
@@ -131,15 +170,32 @@ with map_col:
         )
     folium.LayerControl(collapsed=True).add_to(fmap)
     map_state = st_folium(
-        fmap, key=f"pilot_map_{area}_{year}_{basemap}", height=430,
-        use_container_width=True, returned_objects=["last_clicked"]
+        fmap, key=f"pilot_map_v2_{area}_{year}_{basemap}", height=430,
+        use_container_width=True,
+        returned_objects=[
+            "last_clicked", "last_object_clicked",
+            "last_object_clicked_count",
+        ],
     )
-    click = map_state.get("last_clicked") if isinstance(map_state, dict) else None
-    if isinstance(click, dict) and "lat" in click and "lng" in click:
-        chosen = area_at_point(data.geojson, float(click["lat"]), float(click["lng"]))
-        if chosen and chosen != area:
-            st.session_state.pilot_area = chosen
-            st.rerun()
+    # Clicking a GeoJSON feature is a layer event (last_object_clicked),
+    # not necessarily a map-background event (last_clicked).
+    # Both are supported, and duplicate widget reruns are ignored.
+    if isinstance(map_state, dict):
+        event = map_state.get("last_object_clicked") or map_state.get("last_clicked")
+        if isinstance(event, dict) and "lat" in event and "lng" in event:
+            signature = (
+                round(float(event["lat"]), 7),
+                round(float(event["lng"]), 7),
+                map_state.get("last_object_clicked_count"),
+            )
+            if signature != st.session_state.get("pilot_processed_click"):
+                st.session_state.pilot_processed_click = signature
+                chosen = area_at_point(
+                    data.geojson, float(event["lat"]), float(event["lng"])
+                )
+                if chosen and chosen != area:
+                    st.session_state.pilot_area = chosen
+                    st.rerun()
 
 with details_col:
     st.subheader("02 / Inspect the evidence")
