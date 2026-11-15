@@ -11,7 +11,7 @@ This branch is intentionally separate from main. **No merge is required to test 
 git fetch origin
 git switch --track origin/feature/investigation-case-pilot
 python -m pip install -r requirements.txt
-python -m pytest tests/test_investigation_case_pilot.py tests/test_area_advisor.py -q
+python -m pytest tests/test_investigation_case_pilot.py tests/test_area_advisor.py tests/test_main_site_pilot.py tests/test_discovery_time_machine.py tests/test_action_planner.py -q
 python -m streamlit run investigation_app.py --server.address 0.0.0.0
 ```
 
@@ -34,10 +34,10 @@ Open port **8501** from the Codespaces Ports tab.
 - An exploratory trend is not evidence of a causal explanation, irrigation change, or land-use classification.
 - Area Advisor makes *criterion-specific comparisons* only. Higher NDVI does not prove an area is more suitable for farming; the follow-up priority is a screening indicator, not a diagnosis.
 - Rainfall is contextual only and cannot independently rank two closely spaced polygons.
-- The separate `ui_app.py` and `app.py` are **unchanged**.
+- Original `app.py`, data files and strict scientific loader are **unchanged**; `ui_app.py` is integrated only on the pilot branch.
 - No areas C/D are added in this pilot. That requires actual polygons and matching extraction results.
 
-## File additions only
+## Initial pilot files and later branch-only integration
 
 - `investigation_app.py` standalone interactive app
 - `modules/investigation_case.py` data validation, click mapping, reporting
@@ -57,7 +57,7 @@ The original team site now includes the Investigation Pilot inside **Explore**:
 git switch feature/investigation-case-pilot
 git pull --ff-only origin feature/investigation-case-pilot
 python -m streamlit run ui_app.py --server.port 8503
-``
+```
 
 1. Open port **8503** and navigate to **Explore**. The data source defaults to **Uploaded NASA CSVs (pilot)** (not synthetic demo).
 2. Click Area A or Area B on the map. The sidebar study selector synchronizes after the map click; NDVI, rainfall, graphs and advisor reflect the chosen area.
@@ -77,6 +77,23 @@ Safety: `modules/data_loader.py`, `modules/ui_data.py`, original source data and
 - The **Area Advisor** and downloaded report remain available later in Explore. All existing source files, strict data loader and `main` branch remain untouched.
 
 To view the integration in Codespaces after committing any local work:
+
+```bash
+git switch feature/investigation-case-pilot
+git pull --ff-only origin feature/investigation-case-pilot
+python -m streamlit run ui_app.py --server.address 0.0.0.0 --server.port 8503
+```
+
+
+## The Solution — Evidence to Action (the latest branch-only addition)
+
+**Home** now prominently explains BLOOM's decision-support solution: **Detect → Verify → Act if confirmed → Measure**. Click **Build an evidence-based action plan** to start in Explore with field-follow-up as the investigation goal.
+
+In **Explore**, after the map/time machine and Area Advisor, open **05 / THE SOLUTION**. Choose a focus polygon (defaults to the goal-specific Area Advisor recommendation) and an optional **user-reported, not independently verified** field clue. The app builds a specific evidence trail from the uploaded NDVI/rainfall CSVs, suggests a GPS/photo/crop/land-use/water verification checklist, conditionally explains the kind of local specialist response to consider, and shows how to monitor new observations. Checklist ticks are explicitly user-entered, not proof. Download an actionable Markdown field brief.
+
+**Reports** includes a draft field-check/monitoring plan. No irrigation, crop-yield, or causal claims are made from the satellite data alone; no future values or completed intervention outcomes are invented. The source metadata remains `pending`.
+
+To run the full site in Codespaces (branch only):
 
 ```bash
 git switch feature/investigation-case-pilot
