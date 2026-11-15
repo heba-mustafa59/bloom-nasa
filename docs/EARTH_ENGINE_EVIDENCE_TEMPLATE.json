@@ -1,0 +1,34 @@
+{
+  "_note": "TEMPLATE ONLY. This file is not NASA export evidence. Copy outside the repository, fill using independently inspected real records, and pass its path to --evidence. Never insert invented IDs.",
+  "earth_engine_project": "",
+  "export_utc": "",
+  "original_polygon_asset": "",
+  "tasks": {
+    "ndvi_annual": {
+      "task_id": "",
+      "state": "",
+      "drive_file_url": ""
+    },
+    "rainfall_annual": {
+      "task_id": "",
+      "state": "",
+      "drive_file_url": ""
+    },
+    "study_areas": {
+      "task_id": "",
+      "state": "",
+      "drive_file_url": ""
+    }
+  },
+  "independent_rerun": {
+    "completed": false,
+    "evidence_link": "",
+    "notes": ""
+  },
+  "review": {
+    "reviewer": "",
+    "reviewed_utc": "",
+    "scientific_notes": "",
+    "decision": "pending"
+  }
+}
