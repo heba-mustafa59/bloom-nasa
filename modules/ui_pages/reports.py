@@ -29,6 +29,8 @@ def _report(
     source = (
         "SYNTHETIC DEMO — NOT NASA DATA"
         if ctx.is_demo
+        else "LOCAL CSV — RESEARCH PREVIEW; NASA PROVENANCE PENDING"
+        if ctx.mode == "local"
         else "VERIFIED NASA EXPORTS"
     )
 
