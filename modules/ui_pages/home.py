@@ -32,7 +32,7 @@ def _preview_chart(ctx):
             y=data["ndvi"],
             name="NDVI",
             mode="lines+markers",
-            line=dict(color="#C5E39A", width=3, shape="spline", smoothing=0.25),
+            line=dict(color="#C5E39A", width=3),
             marker=dict(color="#F1F8E4", size=6, line=dict(color="#7FA65B", width=1)),
             fill="tozeroy",
             fillcolor="rgba(163,205,114,0.10)",
