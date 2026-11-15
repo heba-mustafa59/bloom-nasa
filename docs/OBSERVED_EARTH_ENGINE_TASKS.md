@@ -50,10 +50,18 @@ The pasted script also appends **read-only Console diagnostics** after the three
 - **Provenance status of new link:** The user provided this different URL after being instructed to click **Source Script** for the completed `BLOOM_ndvi_annual` task. This supports a *user-reported task-source association*, unlike the prior **Get Link** snapshot. The remote page could not be retrieved independently (web fetch failed), so the code contents and precise task/revision relationship **remain unverified**. Keep the prior snapshot link separately; do not replace or conflate them.
 - **Outstanding:** Record links for rainfall and study-areas Source Script where available; capture original Drive file IDs/URLs; independently reproduce exported numbers using the original imported `areaA` and exact processing parameters.
 
+## Visual confirmation of the current Earth Engine geometry import
+
+**Screenshot supplied 2026-11-15** shows the Earth Engine Code Editor at the top of the script. The **Imports** panel has one entry, `var areaA: MultiPolygon, 15 vertices`, and its `coordinates` field displays **List (2 elements)**. Below, the script visibly uses `ee.List(areaA.coordinates())`, assigns index `0` to `studyA` and index `1` to `studyB`. The lower map displays two study-area shapes around Jericho, with the eastern polygon on the right and western polygon on the left. The Tasks panel simultaneously shows the completed `BLOOM_ndvi_annual` export task (`XYDXA2SARYUCONOKY3GF56G7`).
+
+**What this establishes:** The current displayed Code Editor state has a two-part `areaA` import, and the area-selection code indexes its parts in the expected east/west order. This supports the rationale for `area_a` and `area_b`.
+
+**What it does NOT establish:** The screenshot does not contain a full listing of the 15 vertex coordinates or prove that exactly the same `areaA` import was present when the 2026-11-15 export task ran. The editor still displays `New Script *` (unsaved changes). The separately user-reported comparison showed the original exported GeoJSON matched the repository GeoJSON; task source/import binding remains to be established for complete provenance.
+
 ## Remaining evidence to collect without touching the BLOOM site
 
 1. **Completed:** All three task IDs, completed states and displayed start times are recorded from user-supplied screenshots. Confirm their association with the specific original exported files through the task details and corresponding Drive file IDs.
-2. **Script text supplied + two distinct URLs recorded:** The pasted export logic matches the repository script. The earlier **Get Link** snapshot and the newly supplied link following the **Source Script** instruction are both recorded above; neither remote page could be independently inspected. Confirm the new link opens the completed NDVI task source (including its `areaA` geometry), then preserve the task-specific source and Drive export records.
+2. **Import screenshot added:** Current Code Editor shows `areaA: MultiPolygon, 15 vertices` with two coordinate elements and confirms the code's 0/1 indexing visually. Preserve a task-specific source/import record or independently rerun with the documented original geometry; the current editor's unsaved import is not automatically the completed task's input.
 3. Capture the original Drive URLs or file IDs for all three completed exports, and preserve the unmodified exports separately.
 4. Confirm the Earth Engine project used by the actual tasks, not merely the selected project label in the Code Editor header.
 5. Independently reproduce the MODIS/GPM extraction with the recorded geometry and parameters, and document any difference in values or methodology.
