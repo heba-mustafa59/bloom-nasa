@@ -26,7 +26,7 @@ def render(ctx, navigate):
         stat_card(
             "FOCUS AREA",
             AREA_LABELS[ctx.area_id],
-            "Select a region in Research controls",
+            "Select an area in the study controls above",
         )
 
     with mid:
@@ -52,8 +52,8 @@ def render(ctx, navigate):
     section_title(
         "THE MAP",
         "Geography comes first",
-        "The map does not imply exact boundaries until "
-        "the verified polygons are supplied.",
+        "The map shows the supplied polygons, but their provenance "
+        "must still be confirmed.",
     )
 
     # Draw-enabled map remains available even when NASA data is missing.
