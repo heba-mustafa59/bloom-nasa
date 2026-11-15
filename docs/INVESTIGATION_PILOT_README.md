@@ -47,3 +47,22 @@ Open port **8501** from the Codespaces Ports tab.
 - this README
 
 Avoid merging until the pilot passes UI and science review.
+
+
+## Main BLOOM site integration (this branch only)
+
+The original team site now includes the Investigation Pilot inside **Explore**:
+
+```bash
+git switch feature/investigation-case-pilot
+git pull --ff-only origin feature/investigation-case-pilot
+python -m streamlit run ui_app.py --server.port 8503
+``
+
+1. Open port **8503** and navigate to **Explore**. The data source defaults to **Uploaded NASA CSVs (pilot)** (not synthetic demo).
+2. Click Area A or Area B on the map. The sidebar study selector synchronizes after the map click; NDVI, rainfall, graphs and advisor reflect the chosen area.
+3. Select a year. Choose a goal in **Area Advisor** and download an investigation brief.
+4. **Analytics**, **Mystery Lab** and **Reports** can now read the same uploaded CSVs via the UI-only pilot context. Reports includes the Area Advisor explanation.
+5. You can still switch to **Synthetic demo** for UI testing.
+
+Safety: `modules/data_loader.py`, `modules/ui_data.py`, original source data and `app.py` were NOT changed. Uploaded records are used unchanged, and `metadata.json` retains `pending` provenance status. **This is not a land-suitability score or a field diagnosis.**
