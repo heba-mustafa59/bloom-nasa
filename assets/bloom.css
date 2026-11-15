@@ -1266,9 +1266,10 @@ html { font-size: 17px; }
   padding-bottom: 5rem;
 }
 
-[data-testid="stMarkdownContainer"] p,
-[data-testid="stMarkdownContainer"] li,
-[data-testid="stMarkdownContainer"] blockquote,
+[data-testid="stMarkdownContainer"] > p,
+[data-testid="stMarkdownContainer"] > ul > li,
+[data-testid="stMarkdownContainer"] > ol > li,
+[data-testid="stMarkdownContainer"] > blockquote,
 [data-testid="stText"],
 [data-testid="stWrite"] {
   font-size: 1.035rem;
@@ -1284,7 +1285,7 @@ html { font-size: 17px; }
   line-height: 1.6;
 }
 
-[data-testid="stMarkdownContainer"] h2 {
+[data-testid="stMarkdownContainer"] > h2 {
   font-family: Manrope, Arial, sans-serif;
   font-size: clamp(1.7rem, 2.6vw, 2.3rem);
   font-weight: 800;
@@ -1293,7 +1294,7 @@ html { font-size: 17px; }
   color: #1F3018;
 }
 
-[data-testid="stMarkdownContainer"] h3 {
+[data-testid="stMarkdownContainer"] > h3 {
   font-family: Manrope, Arial, sans-serif;
   font-size: clamp(1.5rem, 2.25vw, 2rem);
   font-weight: 800;
@@ -1305,13 +1306,13 @@ html { font-size: 17px; }
   border-bottom: 1px solid #DAE3D2;
 }
 
-[data-testid="stMarkdownContainer"] h4 {
+[data-testid="stMarkdownContainer"] > h4 {
   font-size: 1.22rem;
   line-height: 1.4;
   color: #1F3018;
 }
 
-[data-testid="stMarkdownContainer"] strong {
+[data-testid="stMarkdownContainer"] > p strong {
   color: #20361E;
 }
 
@@ -1432,5 +1433,5 @@ html { font-size: 17px; }
   [data-testid="stMainBlockContainer"] { padding: 1rem .85rem 3rem; }
   .bloom-page-head h1 { font-size: 2.6rem; }
   .bloom-stat { min-height: 140px; padding: 1.1rem; }
-  [data-testid="stMarkdownContainer"] h3 { margin-top: 1.5rem; }
+  [data-testid="stMarkdownContainer"] > h3 { margin-top: 1.5rem; }
 }
