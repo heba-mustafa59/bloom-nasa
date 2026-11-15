@@ -24,6 +24,20 @@ COLORS = {
 }
 
 
+def format_p_value(value):
+    formatted = number(value, 4)
+
+    if formatted == "N/A":
+        return formatted
+
+    p = float(value)
+
+    if 0 < p < 0.0001:
+        return f"{p:.2e}"
+
+    return formatted
+
+
 def render(ctx, navigate):
     page_header(
         "04 / TWO PERSPECTIVES",
@@ -143,13 +157,12 @@ def render(ctx, navigate):
                 nv.get("slope_per_decade"),
                 4
             ),
-            "NDVI p-value": number(
-                nv.get("p_value"),
-                4
+            "NDVI p-value": format_p_value(
+                nv.get("p_value")
             ),
-            "Rainfall trend": rv.get(
-                "direction",
-                "not_analyzed"
+
+            "Rainfall p-value": format_p_value(
+                rv.get("p_value")
             ),
             "Rainfall / decade (mm)": number(
                 rv.get("slope_per_decade"),

@@ -145,7 +145,7 @@ def load_ui_context(
     data_dir: str | Path | None = None
 ) -> UIContext:
 
-    if mode not in ("demo", "verified"):
+    if mode not in ("demo", "local", "verified"):
         raise ValueError(
             "mode must be demo or verified"
         )
@@ -178,6 +178,113 @@ def load_ui_context(
                 )
             }
         )
+    
+    # Local research preview using actual CSV exports.
+    # Source provenance has not been independently verified.
+    if mode == "local":
+        folder = (
+            Path(data_dir)
+            if data_dir is not None
+            else Path(__file__).resolve().parents[1] / "data"
+        )
+
+        try:
+            ndvi = pd.read_csv(folder / "ndvi_annual.csv")
+            rain = pd.read_csv(folder / "rainfall_annual.csv")
+
+            for frame, column in (
+                (ndvi, "ndvi"),
+                (rain, "rainfall_mm"),
+            ):
+                required = {"year", "area_id", column}
+
+                if not required.issubset(frame.columns):
+                    raise ValueError(
+                        f"{column}: missing required columns"
+                    )
+
+                frame["year"] = pd.to_numeric(
+                    frame["year"], errors="raise"
+                )
+
+                if (
+                    frame["year"].isna().any()
+                    or (frame["year"] % 1 != 0).any()
+                    or not frame["year"].between(
+                        2005, 2024
+                    ).all()
+                ):
+                    raise ValueError(
+                        f"{column}: invalid years"
+                    )
+
+                frame["year"] = frame["year"].astype(int)
+
+                if (
+                    frame["area_id"].isna().any()
+                    or not set(frame["area_id"]).issubset(
+                        AREA_LABELS
+                    )
+                ):
+                    raise ValueError(
+                        f"{column}: invalid area IDs"
+                    )
+
+                if frame.duplicated(
+                    ["year", "area_id"]
+                ).any():
+                    raise ValueError(
+                        f"{column}: duplicate area/year"
+                    )
+
+                frame[column] = pd.to_numeric(
+                    frame[column], errors="raise"
+                )
+
+                valid = frame[column].dropna()
+
+                if not valid.map(math.isfinite).all():
+                    raise ValueError(
+                        f"{column}: non-finite measurements"
+                    )
+
+                if column == "ndvi":
+                    if not valid.between(-1, 1).all():
+                        raise ValueError(
+                            "NDVI must be between -1 and 1"
+                        )
+
+                if column == "rainfall_mm":
+                    if (valid < 0).any():
+                        raise ValueError(
+                            "Rainfall cannot be negative"
+                        )
+
+            return UIContext(
+                mode=mode,
+                area_id=area_id,
+                start_year=start_year,
+                end_year=end_year,
+                ndvi_df=ndvi,
+                rainfall_df=rain,
+                geojson={},
+                metadata={
+                    "verification_status": "local_unverified"
+                },
+            )
+
+        except (OSError, ValueError, TypeError) as exc:
+            return UIContext(
+                mode=mode,
+                area_id=area_id,
+                start_year=start_year,
+                end_year=end_year,
+                ndvi_df=pd.DataFrame(),
+                rainfall_df=pd.DataFrame(),
+                geojson={},
+                metadata={},
+                error=str(exc),
+            )
 
     from modules.data_loader import load_datasets
 

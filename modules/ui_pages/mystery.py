@@ -79,7 +79,7 @@ def render(ctx, navigate):
     )
 
     with l:
-        st.markdown(
+        st.html(
             '''
             <div class="bloom-method-card">
                 <div class="eyebrow">
@@ -102,7 +102,6 @@ def render(ctx, navigate):
                 </div>
             </div>
             ''',
-            unsafe_allow_html=True
         )
 
     with r:
@@ -198,7 +197,7 @@ def render(ctx, navigate):
         )
     )
 
-    st.markdown(
+    st.html(
         f'''
         <div class="bloom-quote">
             <div class="eyebrow">
@@ -207,7 +206,6 @@ def render(ctx, navigate):
             <p>{verdict}</p>
         </div>
         ''',
-        unsafe_allow_html=True
     )
 
     with st.expander(

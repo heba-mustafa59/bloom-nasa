@@ -11,13 +11,24 @@ import streamlit as st
 
 from modules.ui_components import inject_styles, ui_footer, data_label
 from modules.ui_data import AREA_LABELS, load_ui_context
-from modules.ui_pages import home, explore, analytics, mystery, compare, reports, about
+
+from modules.ui_pages import (
+    home, analytics, mystery, compare, reports, about
+)
+
+
+class LazyExplore:
+    @staticmethod
+    def render(ctx, navigate):
+        from modules.ui_pages import explore
+        explore.render(ctx, navigate)
+
 
 ROOT = Path(__file__).resolve().parent
 
 NAV = [
     ("Home", home),
-    ("Explore", explore),
+    ("Explore", LazyExplore),
     ("Analytics", analytics),
     ("Mystery Lab", mystery),
     ("Compare", compare),
@@ -130,22 +141,29 @@ def main() -> None:
         st.divider()
         st.caption("DATA SOURCE")
 
+
+        if "bloom_source" not in st.session_state:
+            st.session_state["bloom_source"] = (
+                "Local CSV - research preview"
+            )
+
         source = st.radio(
             "Choose data source",
-            ["Synthetic demo", "Verified NASA"],
+            [
+                "Synthetic demo",
+                "Local CSV - research preview",
+                "Verified NASA",
+            ],
             key="bloom_source",
             label_visibility="collapsed",
-            help=(
-                "Demo data are invented for UI testing "
-                "and never presented as NASA observations."
-            ),
         )
 
-        mode = (
-            "demo"
-            if source == "Synthetic demo"
-            else "verified"
-        )
+        mode = {
+            "Synthetic demo": "demo",
+            "Local CSV - research preview": "local",
+            "Verified NASA": "verified",
+        }[source]
+
 
         st.caption("STUDY AREA")
 

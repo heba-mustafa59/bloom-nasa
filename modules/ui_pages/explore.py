@@ -56,8 +56,9 @@ def render(ctx, navigate):
         "the verified polygons are supplied.",
     )
 
-    # Draw-enabled map remains available even when NASA data is missing.
-    # Never pass synthetic demonstration values as NASA observations.
+
+    # Use the updated interactive map.
+    # Demo values must not be presented as NASA observations.
     render_map(
         ctx.geojson,
         ctx.area_id,
@@ -65,6 +66,7 @@ def render(ctx, navigate):
         rainfall_df=ctx.rainfall_df if not ctx.is_demo else None,
         metadata=ctx.metadata if not ctx.is_demo else {},
     )
+
 
     section_title(
         "THE PROFILE",

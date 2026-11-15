@@ -131,34 +131,30 @@ def availability(ctx) -> bool:
     return False
 
 
+
 def data_label(ctx) -> None:
-    if ctx.is_demo:
-        st.markdown(
-            '''
-            <div class="bloom-data-ribbon demo">
-                <b>DEMO MODE</b>
-                <span>
-                    Synthetic values for design testing —
-                    not NASA observations.
-                </span>
-            </div>
-            ''',
-            unsafe_allow_html=True,
-        )
-    else:
-        st.markdown(
-            '''
-            <div class="bloom-data-ribbon real">
-                <b>NASA MODE</b>
-                <span>
-                    Verified-source mode. Unavailable
-                    or invalid data will not be replaced.
-                </span>
-            </div>
-            ''',
-            unsafe_allow_html=True,
+    if ctx.mode == "local":
+        st.info(
+            "**LOCAL CSV — RESEARCH PREVIEW**\n\n"
+            "Results are calculated from the annual "
+            "CSV files in the project. NASA source "
+            "provenance and extraction methods "
+            "still require verification."
         )
 
+    elif ctx.mode == "demo":
+        st.warning(
+            "**SYNTHETIC DEMO — NOT NASA DATA**\n\n"
+            "Illustrative values for testing "
+            "the frontend only."
+        )
+
+    else:
+        st.info(
+            "**VERIFIED NASA MODE**\n\n"
+            "Data must pass the existing loader "
+            "and metadata verification checks."
+        )
 
 def style_figure(
     fig,

@@ -106,7 +106,16 @@ def _trend_metrics(label, result, unit):
     slope = _number(result.get("slope_per_decade"), 4 if unit == "NDVI" else 2)
     if slope != "N/A":
         slope += f" {unit}/decade"
-    pvalue = _number(result.get("p_value"), 4)
+
+    raw_p = result.get("p_value")
+    pvalue = _number(raw_p, 4)
+
+    if raw_p is not None:
+        p = float(raw_p)
+
+        if 0 < p < 0.0001:
+            pvalue = f"{p:.2e}"
+
     significance = result.get("significant")
     significance_label = (
         "Yes" if significance is True else
