@@ -18,27 +18,18 @@ def render(ctx, navigate):
         "of vegetation patterns in Jericho, Palestine."
     )
 
-    st.html(
-        '''
-        <div class="bloom-editorial-intro about-intro">
-            <div class="eyebrow">
-                A QUESTION WORTH ASKING
-            </div>
-
-            <h2>
-                See the evidence.<br>
-                <em>Respect the uncertainty.</em>
-            </h2>
-
-            <p>
-                BLOOM combines Earth observation, rigorous
-                trend tests and an exploratory model to ask
-                where vegetation change may deserve deeper
-                study. Satellite trends do not alone prove
-                irrigation, human activity or any other cause.
-            </p>
-        </div>
-        '''
+    # Use compact HTML with no Markdown-indented blank lines.
+    # This avoids accidental code-block rendering in older Streamlit versions.
+    st.markdown(
+        '<div class="bloom-editorial-intro about-intro">'
+        '<div class="eyebrow">A QUESTION WORTH ASKING</div>'
+        '<h2>See the evidence.<br><em>Respect the uncertainty.</em></h2>'
+        '<p>BLOOM combines Earth observation, rigorous trend tests and '
+        'an exploratory model to ask where vegetation change may deserve '
+        'deeper study. Satellite trends do not alone prove irrigation, '
+        'human activity or any other cause.</p>'
+        '</div>',
+        unsafe_allow_html=True,
     )
 
     section_title(
