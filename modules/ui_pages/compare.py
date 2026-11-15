@@ -104,11 +104,16 @@ def render(ctx, navigate):
         st.caption('Supply independently verified observations, exact polygons and data/metadata.json per docs/CONTRACT.md. '
                    'Unverified values are never substituted into scientific comparisons.')
     else:
-        st.markdown('<div class="earth-verdict"><span>DEMO / COMPARISON VERDICT</span></div>'
-                    if ctx.is_demo else '<div class="earth-verdict"><span>COMPARISON VERDICT</span></div>',
-                    unsafe_allow_html=True)
+        st.markdown(
+            '<div class="earth-verdict"><span>DEMO / COMPARISON VERDICT</span></div>'
+            if ctx.is_demo else
+            '<div class="earth-verdict"><span>RESEARCH PREVIEW / COMPARISON VERDICT</span></div>'
+            if ctx.mode == 'local' else
+            '<div class="earth-verdict"><span>COMPARISON VERDICT</span></div>',
+            unsafe_allow_html=True
+        )
         st.write(result['text'])
-    prefix = 'DEMO · ' if ctx.is_demo else ''
+    prefix = 'DEMO · ' if ctx.is_demo else 'RESEARCH PREVIEW · ' if ctx.mode == 'local' else ''
     cards = st.columns(2, gap='large')
     for slot, col in enumerate(cards):
         with col:
