@@ -145,5 +145,9 @@ def render(ctx, navigate):
     st.caption(
         "Data status for your session: Synthetic demonstration"
         if ctx.is_demo
-        else "Data status for your session: Verified NASA mode"
+        else (
+            "Data status: Uploaded NASA-source CSVs; provenance review pending"
+            if ctx.metadata.get("verification_status") != "verified"
+            else "Data status for your session: Verified NASA mode"
+        )
     )

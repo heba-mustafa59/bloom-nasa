@@ -145,6 +145,19 @@ def data_label(ctx) -> None:
             ''',
             unsafe_allow_html=True,
         )
+    elif ctx.metadata.get("verification_status") != "verified" and ctx.ready:
+        st.markdown(
+            '''
+            <div class="bloom-data-ribbon real">
+                <b>UPLOADED NASA CSVs · PILOT</b>
+                <span>
+                    Using original study observations;
+                    independent export provenance review is pending.
+                </span>
+            </div>
+            ''',
+            unsafe_allow_html=True,
+        )
     else:
         st.markdown(
             '''
