@@ -145,9 +145,9 @@ def load_ui_context(
     data_dir: str | Path | None = None
 ) -> UIContext:
 
-    if mode not in ("demo", "verified"):
+    if mode not in ("demo", "local", "verified"):
         raise ValueError(
-            "mode must be demo or verified"
+            "mode must be demo, local or verified"
         )
 
     if (
@@ -178,6 +178,22 @@ def load_ui_context(
                 )
             }
         )
+
+    if mode == "local":
+        from modules.living_data import load_mission_data
+
+        try:
+            mission = load_mission_data(data_dir)
+            return UIContext(
+                mode, area_id, start_year, end_year,
+                mission.ndvi, mission.rainfall, mission.geojson,
+                {**mission.metadata, "verification_status": mission.verification}
+            )
+        except (FileNotFoundError, ValueError, TypeError, KeyError, OSError) as exc:
+            return UIContext(
+                mode, area_id, start_year, end_year,
+                pd.DataFrame(), pd.DataFrame(), {}, {}, str(exc)
+            )
 
     from modules.data_loader import load_datasets
 
