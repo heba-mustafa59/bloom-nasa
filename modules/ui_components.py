@@ -114,8 +114,8 @@ def availability(ctx) -> bool:
         return True
 
     st.info(
-        "**Data unavailable.** No verified NASA "
-        "observations could be loaded for this view."
+        "**Data unavailable.** No usable "
+        "observations were loaded for this selection."
     )
 
     if ctx.error:
@@ -123,8 +123,8 @@ def availability(ctx) -> bool:
             st.code(ctx.error)
 
     st.caption(
-        "Switch to Synthetic demo in Research Controls "
-        "to explore the interface. Demo values are not "
+        "Select a different source above, or use Synthetic demo "
+        "for interface testing. Demo values are not "
         "NASA measurements."
     )
 
