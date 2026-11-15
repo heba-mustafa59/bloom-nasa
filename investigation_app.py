@@ -18,6 +18,7 @@ from modules.investigation_case import (
     investigate,
     load_case_data,
 )
+from modules.area_advisor import GOAL_LABELS, advise_area, advisor_report
 
 
 st.set_page_config(
@@ -269,7 +270,86 @@ for target, field, label, color in [
         )
         st.plotly_chart(fig, use_container_width=True)
 
-st.subheader("04 / The environmental mystery")
+st.subheader("04 / BLOOM Area Advisor · أي منطقة أنسب لهدفك؟")
+st.caption(
+    "Choose what 'better' means for your investigation. BLOOM compares the two "
+    "uploaded polygons using transparent criteria, not invented AI scores."
+)
+
+advisor_goal = st.selectbox(
+    "What matters most to you?",
+    options=list(GOAL_LABELS),
+    format_func=GOAL_LABELS.get,
+    key="pilot_advisor_goal",
+)
+advice = advise_area(data, advisor_goal, year)
+
+compare_left, compare_right = st.columns([1.2, 1], gap="large")
+with compare_left:
+    if advice.winner:
+        label = (
+            "Suggested investigation priority"
+            if advisor_goal == "field_followup"
+            else "Suggested area for this indicator"
+        )
+        st.success(f"**{label}: {AREA_NAMES[advice.winner]}**")
+    else:
+        st.info("**No clear recommendation using this criterion.**")
+
+    st.write(advice.explanation)
+    st.caption(f"Indicator: {advice.metric} · period: {advice.period}")
+    st.caption(
+        "These are relative comparisons of the uploaded data. "
+        "They are not a land-suitability assessment or causal explanation."
+    )
+    if advice.winner:
+        if st.button("🗺️ Focus on the suggested area", key="pilot_advisor_focus"):
+            # Deferred update avoids writing a Streamlit widget state after instantiation.
+            st.session_state.pilot_pending_area = advice.winner
+            st.rerun()
+
+with compare_right:
+    comparison = go.Figure(go.Bar(
+        x=[AREA_NAMES[area] for area in advice.values],
+        y=list(advice.values.values()),
+        marker_color=[
+            "#2e7254" if area == advice.winner else "#98b7a2"
+            for area in advice.values
+        ],
+        text=[f"{value:+.4f}" if advisor_goal == "long_term_greening" else f"{value:.4f}"
+              for value in advice.values.values()],
+        textposition="outside",
+    ))
+    comparison.update_layout(
+        title=advice.metric,
+        height=300,
+        margin=dict(l=0, r=12, t=40, b=10),
+        yaxis_title="NDVI per decade" if advisor_goal == "long_term_greening" else "NDVI",
+        showlegend=False,
+    )
+    st.plotly_chart(comparison, use_container_width=True)
+
+rain_by_area = {
+    area_id: float(annual_series(data, area_id).set_index("year").loc[year, "rainfall_mm"])
+    for area_id in AREA_NAMES
+}
+st.caption(
+    f"Rainfall context for {year}: Area A {rain_by_area['area_a']:.1f} mm · "
+    f"Area B {rain_by_area['area_b']:.1f} mm. "
+    "Rainfall is not scored as 'better'; these neighboring polygons may share coarse rainfall pixels."
+)
+with st.expander("Why BLOOM suggested this · method & limitations"):
+    for caution in advice.cautions:
+        st.write("• " + caution)
+st.download_button(
+    "⬇️ Download recommendation and evidence",
+    data=advisor_report(data, advice).encode("utf-8"),
+    file_name=f"BLOOM_area_advisor_{advisor_goal}_{year}.md",
+    mime="text/markdown",
+    key="pilot_advisor_download",
+)
+
+st.subheader("05 / The environmental mystery")
 mystery = findings["mystery"]
 status = mystery.get("model_status", "insufficient_evidence")
 if status == "validated":
@@ -294,7 +374,7 @@ with st.expander("Scientific limitations and validation"):
         st.write("• " + str(item))
     st.write("The original study-area boundaries and NASA export history must be confirmed before asserting source provenance.")
 
-st.subheader("05 / Generate an investigation brief")
+st.subheader("06 / Generate an investigation brief")
 report = case_report(data, area, findings)
 st.download_button(
     "Download case brief (.md)",
