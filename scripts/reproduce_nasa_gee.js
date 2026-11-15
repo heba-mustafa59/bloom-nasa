@@ -40,7 +40,7 @@ var gpmScale = 11132;
 Map.centerObject(areas, 12);
 Map.addLayer(studyA, {color: '00FF00'}, 'Area A (green)');
 Map.addLayer(studyB, {color: '0000FF'}, 'Area B (blue)');
-print('Polygon count (must be 2):', polygons.size());
+print('Polygon count (must be 2):', areas.size());
 print('Study areas:', areas);
 
 // 3. NASA MODIS NDVI, 16-day observations, 250 m.
