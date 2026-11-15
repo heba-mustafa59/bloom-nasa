@@ -356,7 +356,9 @@ def markdown_report(result: dict) -> str:
         f"Status: **{result['independent_export_comparison']['status']}**",
     ]
     for filename, detail in result["independent_export_comparison"]["files"].items():
-        lines.append(f"- {filename}: {'MATCH' if detail.get('match') else 'MISMATCH'}; {detail.get('detail') or detail.get('error') or f'rows={detail.get("rows_compared")}'}")
+        note = detail.get("detail") or detail.get("error") or ("rows=" + str(detail.get("rows_compared")))
+        outcome = "MATCH" if detail.get("match") else "MISMATCH"
+        lines.append(f"- {filename}: {outcome}; {note}")
     lines += [
         "",
         "## Upstream provenance and outstanding actions",
