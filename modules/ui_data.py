@@ -2,7 +2,8 @@
 """Read BLOOM UI inputs without changing scientific back-end contracts.
 
 Synthetic values are generated only in the explicitly marked demo mode.
-The verified mode delegates to the existing strict data loader.
+Verified mode uses the strict data loader; review mode explicitly allows
+pending-provenance uploads, never silently promoting them to verified data.
 """
 
 from __future__ import annotations
@@ -36,6 +37,14 @@ class UIContext:
     @property
     def is_demo(self) -> bool:
         return self.mode == "demo"
+
+    @property
+    def is_provisional(self) -> bool:
+        return (
+            not self.is_demo
+            and self.metadata.get("verification_status") != "verified"
+            and self.mode == "review"
+        )
 
     @property
     def ready(self) -> bool:
@@ -145,9 +154,9 @@ def load_ui_context(
     data_dir: str | Path | None = None
 ) -> UIContext:
 
-    if mode not in ("demo", "verified"):
+    if mode not in ("demo", "verified", "review"):
         raise ValueError(
-            "mode must be demo or verified"
+            "mode must be demo, verified or review"
         )
 
     if (
@@ -182,13 +191,20 @@ def load_ui_context(
     from modules.data_loader import load_datasets
 
     try:
+        # Only the explicitly chosen review mode can load pending exports.
+        # The strict verified mode retains its original contract.
+        loader_options = (
+            {"require_verified": False}
+            if mode == "review"
+            else {}
+        )
         if data_dir is None:
             ndvi, rain, geojson, metadata = (
-                load_datasets()
+                load_datasets(**loader_options)
             )
         else:
             ndvi, rain, geojson, metadata = (
-                load_datasets(data_dir)
+                load_datasets(data_dir, **loader_options)
             )
 
         return UIContext(
