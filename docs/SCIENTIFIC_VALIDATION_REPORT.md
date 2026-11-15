@@ -66,11 +66,13 @@ python scripts/validate_science.py --report /tmp/bloom_science_audit.md --json /
 
 | Evidence | Current status | Needed to close |
 | --- | --- | --- |
-| Original Earth Engine project, task history and task IDs | **MISSING** | Screenshot/log/URL from the account that actually completed exports |
-| Original completed task output CSVs | **MISSING** | Download unchanged; compare with current CSVs |
-| Original `areaA` imported geometry and export match | **MISSING** | Open the original asset and compare with uploaded GeoJSON |
+| Original Earth Engine project, task history and task IDs | **PARTIAL** — three completed task IDs and start times visible in supplied screenshots | Verify their project, source script and file links; see `docs/OBSERVED_EARTH_ENGINE_TASKS.md` |
+| Original completed task output CSVs | **PARTIAL** — user-shared local comparison reported MATCH for 40 NDVI rows and 40 rainfall rows | Keep original Drive task links/files and independently verify correspondence to those task IDs |
+| Original `areaA` imported geometry and export match | **PARTIAL** — user-shared comparison of exported GeoJSON reported matching feature IDs/coordinates | Confirm the actual task source script used the original `areaA` polygon import |
 | Independent Earth Engine reproduction | **MISSING** | Execute documented export script on the same imported polygon and reconcile outputs |
 | Reviewer sign-off and documented field/land-use classifications | **MISSING** | Named reviewer, UTC date, methods and conclusions |
+
+**Update on 2026-11-15:** The supplied Earth Engine screenshots document three completed export tasks. The user separately ran the original-file comparison and reported MATCH for both 40-row tables and the two polygon geometries. This strengthens the provenance trail but does not yet independently link each Drive file to its task ID or establish a reproducible rerun. See `docs/OBSERVED_EARTH_ENGINE_TASKS.md`.
 
 **Decision: do not change `data/metadata.json` to `verified` and do not describe the uploaded polygons or annual values as independently authenticated NASA measurements yet.**
 
