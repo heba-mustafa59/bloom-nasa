@@ -14,6 +14,6 @@ jobs:
       - name: Install
         run: python -m pip install -r requirements.txt
       - name: Compile
-        run: python -m py_compile investigation_app.py ui_app.py modules/investigation_case.py modules/area_advisor.py modules/ui_pilot_context.py modules/ui_pages/explore_pilot.py modules/ui_pages/explore.py modules/ui_pages/reports.py modules/ui_pages/home.py modules/discovery_time_machine.py
+        run: python -m py_compile investigation_app.py ui_app.py modules/investigation_case.py modules/area_advisor.py modules/ui_pilot_context.py modules/ui_pages/explore_pilot.py modules/ui_pages/explore.py modules/ui_pages/reports.py modules/ui_pages/home.py modules/discovery_time_machine.py modules/action_planner.py modules/ui_pages/action_plan_pilot.py
       - name: Test
-        run: python -m pytest tests/test_investigation_case_pilot.py tests/test_area_advisor.py tests/test_main_site_pilot.py tests/test_discovery_time_machine.py -q
+        run: python -m pytest tests/test_investigation_case_pilot.py tests/test_area_advisor.py tests/test_main_site_pilot.py tests/test_discovery_time_machine.py tests/test_action_planner.py -q
