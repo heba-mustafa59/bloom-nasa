@@ -143,8 +143,8 @@ def main() -> None:
             key="bloom_source",
             label_visibility="collapsed",
             help=(
-                "Demo data are invented for UI testing "
-                "and never presented as NASA observations."
+                "Synthetic demo is for interface exploration only; "
+                "it is not NASA satellite data."
             ),
         )
 
