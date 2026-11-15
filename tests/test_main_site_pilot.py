@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import pandas as pd
+import pytest
 
 from modules.investigation_case import CaseData, load_case_data
 from modules.ui_data import UIContext, load_ui_context
@@ -41,7 +42,7 @@ def test_pilot_map_and_trend_figures_use_uploaded_values():
     assert "name" in html
     series = data.ndvi.loc[data.ndvi["area_id"] == "area_a", ["year", "ndvi"]]
     fig = _chart(series, 2024, "ndvi", "NDVI", "#2E7254")
-    assert fig.data[0].y[-1] == 0.35173537554554934
+    assert float(fig.data[0].y[-1]) == pytest.approx(0.35173537554554934)
 
 
 def test_main_reports_keep_data_status_and_include_advisor():
