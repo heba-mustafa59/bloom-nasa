@@ -358,16 +358,24 @@ def render(ctx, navigate) -> None:
         for note in recommendation.cautions:
             st.write("• " + note)
 
+    # Integrated solution: verification → conditional action → monitoring.
+    from modules.ui_pages.action_plan_pilot import render_action_pathway
+    action_plan, action_report = render_action_pathway(
+        data, recommendation, ctx.area_id
+    )
+
     section_title(
-        "05 / ACTION BRIEF",
+        "06 / ACTION BRIEF",
         "Carry the evidence forward",
-        "Download a report explaining the selected area's observations and the advisor recommendation.",
+        "Download an investigation report together with your field-ready action pathway.",
     )
     findings = investigate(data, ctx.area_id)
     report = (
         case_report(data, ctx.area_id, findings)
         + "\n---\n\n"
         + advisor_report(data, recommendation)
+        + "\n---\n\n"
+        + action_report
     )
     st.download_button(
         "⬇️ Download investigation + recommendation (.md)",
