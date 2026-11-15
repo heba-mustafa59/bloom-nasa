@@ -41,7 +41,17 @@ def click_selection(event, pair, slot, available):
 def annual_series(ctx, field, area, start, end):
     """Preserve gaps and reject ambiguous/invalid annual measurements."""
     source = ctx.ndvi_df if field == 'ndvi' else ctx.rainfall_df
-    authorized = ctx.is_demo or ctx.metadata.get('verification_status') == 'verified'
+    # Research-preview CSVs have already passed the shared strict local loader.
+    # They may be examined as observations while provenance remains PENDING.
+    authorized = (
+        ctx.is_demo
+        or ctx.metadata.get('verification_status') == 'verified'
+        or (
+            ctx.mode == 'local'
+            and ctx.ready
+            and ctx.metadata.get('verification_status') == 'pending'
+        )
+    )
     return pd.DataFrame({
         'year': range(start, end + 1),
         'area_id': area,
