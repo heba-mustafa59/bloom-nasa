@@ -27,8 +27,8 @@ NAV_NAMES = [name for name, _ in NAV]
 NAV_TITLES = {
     "Home": "Overview",
     "Explore": "Explore map",
-    "Analytics": "Trends",
-    "Mystery Lab": "Mystery lab",
+    "Analytics": "Analytics",
+    "Mystery Lab": "Investigate",
     "Compare": "Compare areas",
     "Reports": "Reports",
     "About": "About",
@@ -72,7 +72,7 @@ def main() -> None:
             """
             <div class="bloom-nav-brand">
               <div class="bloom-nav-logo">
-                <span class="bloom-nav-mark" aria-hidden="true">✳</span>
+                <span class="bloom-nav-mark" aria-hidden="true">◉</span>
                 <b>BLOOM</b>
               </div>
               <div class="bloom-nav-meta">
