@@ -58,13 +58,27 @@ The pasted script also appends **read-only Console diagnostics** after the three
 
 **What it does NOT establish:** The screenshot does not contain a full listing of the 15 vertex coordinates or prove that exactly the same `areaA` import was present when the 2026-11-15 export task ran. The editor still displays `New Script *` (unsaved changes). The separately user-reported comparison showed the original exported GeoJSON matched the repository GeoJSON; task source/import binding remains to be established for complete provenance.
 
+## Reproduction task runs completed — screenshot evidence on 2026-11-15
+
+A new user-provided Earth Engine **Tasks** screenshot shows all three `BLOOM_RECHECK_*` exports under **Submitted Tasks**, each marked **Phase: Completed**. These rerun tasks were requested after applying the code fix replacing the undefined `polygons.size()` diagnostic with `areas.size()`. The rerun script uses coordinates frozen from the existing `data/study_areas.geojson`, so does not depend on the editor's imported `areaA`.
+
+| Rerun task | Task ID transcribed from screenshot | Status | Started (browser local time) | Runtime |
+|---|---|---|---|---|
+| `BLOOM_RECHECK_study_areas` | `W6GSGMBVSMYBG7LEMDX64ZCC` | Completed | 2026-11-15 12:14:46 +0200 | 2 s |
+| `BLOOM_RECHECK_rainfall_annual` | `HSJD5S6KXFCMVYRYKIU7MDUS` | Completed | 2026-11-15 12:14:41 +0200 | 32 s |
+| `BLOOM_RECHECK_ndvi_annual` | `SYAG3QOLLYCRACPFJWCSHDDQ` | Completed | 2026-11-15 12:14:31 +0200 | 6 s |
+
+**Evidence scope:** task IDs, visible timestamps, names and completion states were transcribed from the user-supplied screenshot. The exact Drive file output IDs, source snapshots and rerun numerical results have **not** yet been independently inspected. **Completed task ≠ verified matching results**.
+
+**Next action:** From each completed task select **Open in Drive**; download only the three new outputs from `BLOOM_EE_RECHECK_2026` to a separate local folder `~/Desktop/bloom_ee_rerun`. Run `python scripts/validate_science.py --original-dir "$HOME/Desktop/bloom_ee_rerun" --report "$HOME/Desktop/BLOOM_reproduction_result.md" --json "$HOME/Desktop/BLOOM_reproduction_result.json"`. Record the comparison's actual output (MATCH/MISMATCH), task-specific Drive links and human review separately. Details: `docs/SCIENCE_REPRODUCTION_RUNBOOK.md`.
+
 ## Remaining evidence to collect without touching the BLOOM site
 
 1. **Completed:** All three task IDs, completed states and displayed start times are recorded from user-supplied screenshots. Confirm their association with the specific original exported files through the task details and corresponding Drive file IDs.
 2. **Import screenshot added:** Current Code Editor shows `areaA: MultiPolygon, 15 vertices` with two coordinate elements and confirms the code's 0/1 indexing visually. Preserve a task-specific source/import record or independently rerun with the documented original geometry; the current editor's unsaved import is not automatically the completed task's input.
 3. Capture the original Drive URLs or file IDs for all three completed exports, and preserve the unmodified exports separately.
 4. Confirm the Earth Engine project used by the actual tasks, not merely the selected project label in the Code Editor header.
-5. Independently reproduce the MODIS/GPM extraction with the recorded geometry and parameters, and document any difference in values or methodology.
+5. **Execution completed in Earth Engine:** The three `BLOOM_RECHECK_*` tasks are shown completed (IDs above). **Still pending:** download their actual output files, run a fresh comparison to the repository, and document any differences in values or methodology.
 6. Obtain a named scientific reviewer sign-off. Only then may the team decide whether a **separate reviewed** change to `data/metadata.json` should mark a verified source.
 
 **Decision:** Scientific provenance remains **pending**. Do not change `data/metadata.json` to `verified` or publish unsupported source-certification claims.
