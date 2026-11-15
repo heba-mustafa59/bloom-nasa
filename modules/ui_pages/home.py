@@ -97,33 +97,34 @@ def render(ctx, navigate):
                 ):
                     navigate("Analytics")
 
-        with right:
-            status = (
-                "SYNTHETIC DEMO"
-                if ctx.is_demo else
-                "PROVENANCE PENDING"
-                if ctx.is_provisional else
-                "VERIFIED OBSERVATIONS"
-            )
-            st.html(
-                '<div class="bloom-hero-panel-head">'
-                '<span>STUDY SNAPSHOT / VEGETATION</span>'
-                '<strong>' + escape(AREA_LABELS.get(ctx.area_id, "Study area")) + '</strong>'
-                '<small>' + escape(status) + '</small>'
-                '</div>'
-            )
-            _preview_chart(ctx)
-            nd = ctx.area_data("ndvi")
-            rain = ctx.area_data("rainfall_mm")
-            nd_mean = number(nd["ndvi"].mean(), 3) if len(nd) else "N/A"
-            rain_mean = number(rain["rainfall_mm"].mean(), 1, " mm") if len(rain) else "N/A"
-            st.html(
-                '<div class="bloom-hero-panel-metrics">'
-                '<div><span>MEAN NDVI</span><strong>' + escape(nd_mean) + '</strong></div>'
-                '<div><span>MEAN ANNUAL RAIN</span><strong>' + escape(rain_mean) + '</strong></div>'
-                '</div>'
-            )
-
+    with right:
+                with st.container(key="bloom_data_panel"):
+                status = (
+                    "SYNTHETIC DEMO"
+                    if ctx.is_demo else
+                    "PROVENANCE PENDING"
+                    if ctx.is_provisional else
+                    "VERIFIED OBSERVATIONS"
+                )
+                st.html(
+                    '<div class="bloom-hero-panel-head">'
+                    '<span>STUDY SNAPSHOT / VEGETATION</span>'
+                    '<strong>' + escape(AREA_LABELS.get(ctx.area_id, "Study area")) + '</strong>'
+                    '<small>' + escape(status) + '</small>'
+                    '</div>'
+                )
+                _preview_chart(ctx)
+                nd = ctx.area_data("ndvi")
+                rain = ctx.area_data("rainfall_mm")
+                nd_mean = number(nd["ndvi"].mean(), 3) if len(nd) else "N/A"
+                rain_mean = number(rain["rainfall_mm"].mean(), 1, " mm") if len(rain) else "N/A"
+                st.html(
+                    '<div class="bloom-hero-panel-metrics">'
+                    '<div><span>MEAN NDVI</span><strong>' + escape(nd_mean) + '</strong></div>'
+                    '<div><span>MEAN ANNUAL RAIN</span><strong>' + escape(rain_mean) + '</strong></div>'
+                    '</div>'
+                )
+    
     # Make the provenance caveat visible without obscuring the landing experience.
     data_label(ctx)
 
