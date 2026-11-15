@@ -80,6 +80,13 @@ if not data.verified:
 if "pilot_area" not in st.session_state or st.session_state.pilot_area not in AREA_NAMES:
     st.session_state.pilot_area = "area_a"
 
+# A map click happens after the Study area selectbox is instantiated.
+# Queue the selection on that run and apply it at the start of the next run,
+# before Streamlit creates the selectbox. Never mutate a live widget key.
+pending_area = st.session_state.pop("pilot_pending_area", None)
+if pending_area in AREA_NAMES:
+    st.session_state.pilot_area = pending_area
+
 top_a, top_b, top_c = st.columns([2, 1, 1])
 with top_a:
     area = st.selectbox(
@@ -194,7 +201,7 @@ with map_col:
                     data.geojson, float(event["lat"]), float(event["lng"])
                 )
                 if chosen and chosen != area:
-                    st.session_state.pilot_area = chosen
+                    st.session_state.pilot_pending_area = chosen
                     st.rerun()
 
 with details_col:
