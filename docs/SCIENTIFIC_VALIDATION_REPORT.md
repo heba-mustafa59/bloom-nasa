@@ -84,6 +84,12 @@ This substantially clarifies the methodology actually represented in the supplie
 
 **Decision: do not change `data/metadata.json` to `verified` and do not describe the uploaded polygons or annual values as independently authenticated NASA measurements yet.**
 
+### Reproducibility workflow prepared — execution pending
+
+A new standalone Earth Engine script, `scripts/reproduce_nasa_gee.js`, has been added on the science-only branch. It freezes the exact two polygons from the committed `study_areas.geojson`, preserves the documented MODIS/GPM reductions and exports into a **separate Drive folder** with `BLOOM_RECHECK_*` task names. The accompanying `tests/test_science_rerun_script.py` statically checks the frozen coordinates, unchanged reduction code and isolated exports. Follow `docs/SCIENCE_REPRODUCTION_RUNBOOK.md` to perform an authenticated rerun and then compare its new outputs using `scripts/validate_science.py`.
+
+**Status:** Re-execution script prepared and CI-tested, **not yet run in Earth Engine**. No new comparison outcome or proof of method correctness is asserted. The remaining items in the table above must be resolved with actual new task outputs and reviewer evidence.
+
 ## 6. No-impact guarantee
 
 The new verification work is confined to additions under `scripts/`, `tests/`, `docs/` and a branch-specific CI workflow. Existing Python application entry points, pages, maps, CSS, annual data tables, GeoJSON, scientific engines and metadata are not modified.
