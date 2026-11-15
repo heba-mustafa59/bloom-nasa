@@ -45,7 +45,7 @@ def render(ctx, navigate):
                 if ctx.geojson.get("features")
                 else "Pending"
             ),
-            "Verified GeoJSON polygons only",
+            ("Verified study boundaries" if ctx.metadata.get("verification_status") == "verified" else "Source verification pending"),
             "sky",
         )
 
@@ -57,15 +57,9 @@ def render(ctx, navigate):
     )
 
 
-    # Use the updated interactive map.
-    # Demo values must not be presented as NASA observations.
-    render_map(
-        ctx.geojson,
-        ctx.area_id,
-        ndvi_df=ctx.ndvi_df if not ctx.is_demo else None,
-        rainfall_df=ctx.rainfall_df if not ctx.is_demo else None,
-        metadata=ctx.metadata if not ctx.is_demo else {},
-    )
+    # The stable map renderer accepts the two agreed contract arguments.
+    # Local research-preview polygons are supplied without NASA verification claims.
+    render_map(ctx.geojson, ctx.area_id)
 
 
     section_title(
