@@ -69,7 +69,7 @@ def _report(
 ## Limitations
 {limitations or '- No additional model limitations were supplied.'}
 - Correlation and anomalies are not proof of causation.
-- This is a UI preview, not the Integration team's official report.
+- Interpret statistical findings in their study and data-quality context.
 """
 
 
@@ -125,8 +125,7 @@ def render(ctx, navigate):
     section_title(
         "01 / INVESTIGATION BRIEF",
         "Your evidence report",
-        "A preview designed for transparency, "
-        "not unsupported certainty."
+        "A concise record of the observations, trends and limitations."
     )
 
     report = _report(
@@ -178,16 +177,11 @@ def render(ctx, navigate):
         data=report.encode("utf-8"),
         file_name=(
             f"BLOOM_{ctx.area_id}_"
-            f"{ctx.start_year}-{ctx.end_year}_preview.md"
+            f"{ctx.start_year}-{ctx.end_year}.md"
         ),
         mime="text/markdown",
         type="primary",
         key="reports_download"
     )
 
-    st.caption(
-        "Integration can replace this self-contained "
-        "preview with modules/report_generator.py "
-        "once its implementation is ready."
-    )
 
