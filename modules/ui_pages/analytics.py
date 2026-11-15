@@ -103,14 +103,14 @@ def render(ctx, navigate):
         mystery_for(ctx)
     )
 
-    st.caption(
-        "Mystery holdout validation always uses the full "
-        "2005–2024 period, independent of the year-range "
-        "display filter."
-    )
+    with st.expander("About the analysis period"):
+        st.write(
+            "Anomaly-model validation uses 2005–2024, even when a shorter "
+            "range is selected for chart display."
+        )
 
     with st.expander(
-        "Download the selected observations"
+        "View or download observations"
     ):
         l, r = st.columns(2)
 
