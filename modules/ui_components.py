@@ -145,11 +145,25 @@ def data_label(ctx) -> None:
             ''',
             unsafe_allow_html=True,
         )
+    elif ctx.is_provisional:
+        st.markdown(
+            '''
+            <div class="bloom-data-ribbon provisional">
+                <b>PROVENANCE PENDING</b>
+                <span>
+                    Original uploaded CSV observations are displayed for
+                    review. Their NASA export origin and exact sampling
+                    polygons have not been independently confirmed.
+                </span>
+            </div>
+            ''',
+            unsafe_allow_html=True,
+        )
     else:
         st.markdown(
             '''
             <div class="bloom-data-ribbon real">
-                <b>NASA MODE</b>
+                <b>VERIFIED MODE</b>
                 <span>
                     Verified-source mode. Unavailable
                     or invalid data will not be replaced.
