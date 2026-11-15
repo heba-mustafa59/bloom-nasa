@@ -45,7 +45,7 @@ The pasted script also appends **read-only Console diagnostics** after the three
 - **User-supplied Code Editor link:** https://code.earthengine.google.com/8b38830576de84dc8d3eb6877b3dd2ac
 - **Received:** 2026-11-15, in response to the request for the NDVI export task's Source Script link.
 - **Review scope:** The exact URL has been recorded, but its remote content could not be fetched by the independent review tool. The previously pasted JavaScript was compared separately with the repository export logic; **do not treat the pasted text as an authenticated fetch from this URL**.
-- **Task association:** **Unverified** until the link is opened directly from the completed `BLOOM_ndvi_annual` task's **Source Script** control or supported by a task detail screenshot / export record. A Code Editor **Get Link** action may share the current editor state and is not by itself a verified immutable task revision.
+- **Link origin confirmed:** The user's screenshot explicitly shows the Code Editor **Get Link** popup and states that the shared URL is a **code snapshot**. It was **not obtained through the completed task's Source Script button**. Therefore this URL is evidence of a shared editor snapshot, **not authenticated evidence of the script revision that executed task `BLOOM_ndvi_annual`**.
 - **Outstanding:** Record links for rainfall and study-areas Source Script where available; capture original Drive file IDs/URLs; independently reproduce exported numbers using the original imported `areaA` and exact processing parameters.
 
 ## Remaining evidence to collect without touching the BLOOM site
