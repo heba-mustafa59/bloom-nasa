@@ -77,8 +77,12 @@ def test_explore_renderer_uses_two_argument_contract():
 
 
 def test_multiline_html_is_not_treated_as_markdown_code():
-    for path in ("ui_app.py", "modules/ui_pages/about.py", "modules/ui_components.py"):
+    for path in ("ui_app.py", "modules/ui_components.py"):
         text = (ROOT / path).read_text(encoding="utf-8")
-        assert 'st.markdown(\n        \'\'\'' not in text
-        assert 'st.markdown(\n            \'\'\'' not in text
         assert "st.html(" in text
+
+    about = (ROOT / "modules/ui_pages/about.py").read_text(encoding="utf-8")
+    assert 'st.markdown(' in about
+    assert 'unsafe_allow_html=True' in about
+    assert "'<h2>See the evidence.<br><em>Respect the uncertainty.</em></h2>'" in about
+    assert "st.html(\n        '''" not in about
