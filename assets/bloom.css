@@ -1239,3 +1239,198 @@ p {
     transform: none !important;
   }
 }
+
+/* ========================================
+   BLOOM / READABILITY & EDITORIAL RHYTHM
+   Larger text, clear data hierarchy, reduced visual noise.
+   Only presentation styling. Preserves analytical code.
+======================================== */
+
+:root { --bloom-text: #263724; }
+html { font-size: 17px; }
+
+[data-testid="stApp"],
+[data-testid="stMain"],
+[data-testid="stSidebar"] {
+  font-family: 'DM Sans', Arial, sans-serif;
+  color: var(--bloom-text);
+}
+
+[data-testid="stAppViewContainer"] {
+  background: #F3F6EF;
+}
+
+[data-testid="stMainBlockContainer"] {
+  max-width: 1460px;
+  padding-top: 1.4rem;
+  padding-bottom: 5rem;
+}
+
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stMarkdownContainer"] blockquote,
+[data-testid="stText"],
+[data-testid="stWrite"] {
+  font-size: 1.035rem;
+  line-height: 1.78;
+  color: #344633;
+}
+
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] p,
+[data-testid="stCaptionContainer"] span {
+  font-size: .89rem !important;
+  color: #657260;
+  line-height: 1.6;
+}
+
+[data-testid="stMarkdownContainer"] h2 {
+  font-family: Manrope, Arial, sans-serif;
+  font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -.035em;
+  color: #1F3018;
+}
+
+[data-testid="stMarkdownContainer"] h3 {
+  font-family: Manrope, Arial, sans-serif;
+  font-size: clamp(1.5rem, 2.25vw, 2rem);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: -.035em;
+  color: #1F3018;
+  padding: 0 0 .68rem;
+  margin: 2.2rem 0 .8rem;
+  border-bottom: 1px solid #DAE3D2;
+}
+
+[data-testid="stMarkdownContainer"] h4 {
+  font-size: 1.22rem;
+  line-height: 1.4;
+  color: #1F3018;
+}
+
+[data-testid="stMarkdownContainer"] strong {
+  color: #20361E;
+}
+
+[data-testid="stAlert"] {
+  border-radius: 12px;
+  border: 1px solid #E8DBB9;
+  border-left: 4px solid #B48A49;
+  box-shadow: none;
+  padding: .55rem .8rem;
+}
+
+[data-testid="stAlert"] [data-testid="stMarkdownContainer"] p {
+  font-size: 1.04rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+[data-testid="stMetric"] {
+  background: #FEFFFC;
+  border-radius: 12px;
+  padding: 1.15rem 1.3rem;
+}
+
+[data-testid="stMetricLabel"] p,
+[data-testid="stMetricLabel"] div {
+  font-size: .91rem !important;
+  font-weight: 650;
+  color: #60735B;
+}
+
+[data-testid="stMetricValue"] div {
+  color: #1F3018;
+  font-family: Manrope, Arial, sans-serif;
+  font-size: clamp(1.32rem, 2.2vw, 2rem);
+  line-height: 1.3;
+}
+
+.bloom-page-head {
+  padding: 2.4rem .2rem 1.85rem;
+}
+
+.bloom-page-head h1 {
+  font-size: clamp(2.75rem, 5vw, 5rem);
+  line-height: 1.12;
+  letter-spacing: -.06em;
+}
+
+.bloom-page-head p,
+.bloom-editorial-intro p,
+.bloom-section-heading p {
+  font-size: 1.08rem;
+  line-height: 1.68;
+  color: #657360;
+}
+
+.bloom-section-heading {
+  margin: 2.35rem 0 1.15rem;
+  padding-bottom: 1rem;
+}
+
+.bloom-section-heading h2 {
+  font-size: clamp(1.7rem, 2.8vw, 2.7rem);
+  margin-bottom: .35rem;
+}
+
+.bloom-stat {
+  min-height: 170px;
+  padding: 1.55rem 1.4rem;
+  border-top-color: #769945;
+  border-radius: 11px;
+}
+
+.bloom-stat span {
+  font-size: .73rem;
+  color: #5D7655;
+}
+
+.bloom-stat strong {
+  color: #1F3018;
+  font-size: clamp(1.32rem, 2.05vw, 2.1rem);
+}
+
+.bloom-stat small {
+  font-size: .86rem;
+  line-height: 1.45;
+}
+
+.stButton > button,
+.stDownloadButton > button,
+.stFormSubmitButton > button {
+  font-size: .99rem;
+  min-height: 46px;
+}
+
+.st-key-bloom_topnav .stButton > button {
+  font-size: .85rem;
+}
+
+[data-testid="stExpander"] {
+  background: #FCFDF9;
+  border: 1px solid #DCE5D5;
+  border-radius: 11px;
+}
+
+[data-testid="stExpander"] summary {
+  font-size: 1rem;
+  font-weight: 650;
+  color: #294324;
+}
+
+[data-testid="stDivider"] {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 770px) {
+  html { font-size: 16px; }
+  [data-testid="stMainBlockContainer"] { padding: 1rem .85rem 3rem; }
+  .bloom-page-head h1 { font-size: 2.6rem; }
+  .bloom-stat { min-height: 140px; padding: 1.1rem; }
+  [data-testid="stMarkdownContainer"] h3 { margin-top: 1.5rem; }
+}
