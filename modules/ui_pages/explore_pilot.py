@@ -11,6 +11,7 @@ import streamlit as st
 from streamlit_folium import st_folium
 
 from modules.area_advisor import GOAL_LABELS, advise_area, advisor_report
+from modules.discovery_time_machine import NDVI_BANDS, ndvi_color, snapshot
 from modules.investigation_case import (
     AREA_NAMES,
     CaseData,
@@ -57,6 +58,9 @@ def _map(data: CaseData, active: str, year: int, basemap: str):
         for polygon in polygons:
             all_points.extend((point[1], point[0]) for point in polygon[0])
         readings = annual_series(data, area_id).set_index("year").loc[year]
+        # Stable NDVI color categories, not per-year normalization:
+        # the same observed value always gets the same shade.
+        polygon_fill = ndvi_color(float(readings["ndvi"]))
         enriched = {
             **feature,
             "properties": {
@@ -70,11 +74,11 @@ def _map(data: CaseData, active: str, year: int, basemap: str):
         folium.GeoJson(
             enriched,
             name=AREA_NAMES[area_id],
-            style_function=lambda _, selected=(area_id == active): {
-                "color": "#163D2E" if selected else "#398562",
-                "weight": 4 if selected else 2,
-                "fillColor": "#D99A56" if selected else "#65AF81",
-                "fillOpacity": .38 if selected else .22,
+            style_function=lambda _, selected=(area_id == active), ndvi_fill=polygon_fill: {
+                "color": "#163D2E" if selected else "#546C46",
+                "weight": 5 if selected else 2,
+                "fillColor": ndvi_fill,
+                "fillOpacity": .79 if selected else .66,
             },
             highlight_function=lambda _: {"weight": 5, "fillOpacity": .55},
             tooltip=folium.GeoJsonTooltip(
@@ -92,6 +96,27 @@ def _map(data: CaseData, active: str, year: int, basemap: str):
              [max(p[0] for p in all_points), max(p[1] for p in all_points)]]
         )
     folium.LayerControl(collapsed=True).add_to(fmap)
+    # Map legend specifies that colors represent means over an entire polygon,
+    # not genuine MODIS pixel imagery.
+    legend_html = """
+    <div style="position:fixed;z-index:9999;bottom:18px;left:16px;
+      background:#fffefa;border:1px solid #dce5d7;border-radius:11px;
+      box-shadow:0 4px 14px #182e2830;padding:9px 11px;
+      font:12px Arial,sans-serif;max-width:205px">
+      <strong>Annual polygon-mean NDVI</strong><br>
+      <div style="display:flex;gap:2px;margin:7px 0">
+    """
+    for _, shade in NDVI_BANDS:
+        legend_html += (
+            f'<span style="background:{shade};width:23px;height:9px"></span>'
+        )
+    legend_html += """
+      </div>
+      <span style="color:#526858">Lower NDVI ← → Higher NDVI</span><br>
+      <small style="color:#526858">Colored study areas, not pixel NDVI</small>
+    </div>
+    """
+    fmap.get_root().html.add_child(folium.Element(legend_html))
     return fmap
 
 
@@ -120,19 +145,72 @@ def render(ctx, navigate) -> None:
                 "This does not change or replace the recorded measurements."
             )
 
-    year = st.slider(
-        "📅 Inspection year", 2005, 2024,
-        value=ctx.end_year, key="bloom_explore_year",
-        help="The selected year controls the map, its values and year-specific recommendations.",
+    section_title(
+        "01 / TIME MACHINE",
+        "Travel across twenty years",
+        "Move between 2005 and 2024 to see how the study polygons' recorded vegetation signal changes.",
+    )
+    # The navigation buttons precede the slider's creation, preventing
+    # StreamlitWidgetAlreadyInstantiatedError when updating its state.
+    if "bloom_explore_year" not in st.session_state:
+        st.session_state["bloom_explore_year"] = ctx.end_year
+    controls = st.columns([1, 1, 3, 1, 1], gap="small")
+    with controls[0]:
+        if st.button("⏮ 2005", key="bloom_time_first", use_container_width=True):
+            st.session_state["bloom_explore_year"] = 2005
+    with controls[1]:
+        if st.button("◀", key="bloom_time_prev", use_container_width=True, help="Previous year"):
+            st.session_state["bloom_explore_year"] = max(
+                2005, int(st.session_state["bloom_explore_year"]) - 1
+            )
+    with controls[3]:
+        if st.button("▶", key="bloom_time_next", use_container_width=True, help="Next year"):
+            st.session_state["bloom_explore_year"] = min(
+                2024, int(st.session_state["bloom_explore_year"]) + 1
+            )
+    with controls[4]:
+        if st.button("2024 ⏭", key="bloom_time_last", use_container_width=True):
+            st.session_state["bloom_explore_year"] = 2024
+    with controls[2]:
+        # Explicit LTR orientation preserves chronological order in Arabic UI.
+        st.markdown(
+            '<style>div[data-testid="stSlider"]{direction:ltr!important}</style>',
+            unsafe_allow_html=True,
+        )
+        year = st.slider(
+            "Year • 2005 → 2024", 2005, 2024,
+            key="bloom_explore_year",
+            help="This year controls the map colors, NDVI/rainfall values, and year-specific advice.",
+        )
+
+    changes = snapshot(data, int(year))
+    earlier, later = st.columns(2, gap="medium")
+    with earlier:
+        a = changes["area_a"]
+        st.metric(
+            "AREA A · NDVI", f"{a.selected_ndvi:.4f}",
+            delta=f"{a.difference:+.4f} vs 2005",
+        )
+    with later:
+        b = changes["area_b"]
+        st.metric(
+            "AREA B · NDVI", f"{b.selected_ndvi:.4f}",
+            delta=f"{b.difference:+.4f} vs 2005",
+        )
+    st.caption(
+        "Δ = annual NDVI in the selected year minus 2005. "
+        "Colors represent annual polygon averages on one fixed scale, "
+        "not pixel-level satellite imagery or a proven cause."
     )
     basemap = st.selectbox(
         "🗺️ Map background", ["Satellite", "Streets"], key="bloom_explore_basemap",
     )
 
     section_title(
-        "01 / INTERACTIVE MAP",
-        "Choose a study area",
-        "Click either polygon directly, or use the Study Area selector in the sidebar.",
+        "02 / INTERACTIVE MAP",
+        "Watch the landscape signal change",
+        "Click either polygon directly. The active area's outline is darker; "
+        "the fill shade represents the selected year's mean NDVI.",
     )
     l, r = st.columns([1.65, 1], gap="large")
     with l:
@@ -187,10 +265,36 @@ def render(ctx, navigate) -> None:
         )
 
     section_title(
-        "02 / EVIDENCE",
-        "The long view",
-        "Use the graphs to explore changes over time; source values are unchanged.",
+        "03 / EVIDENCE",
+        "Before and after — with the full history",
+        "Compare 2005 with the selected year, then inspect the full annual series.",
     )
+
+    # Two-point comparison, not a trend test. The time slider also drives
+    # the marker on the full-year time-series charts below.
+    before_after = go.Figure()
+    before_after.add_trace(go.Bar(
+        x=[AREA_NAMES["area_a"], AREA_NAMES["area_b"]],
+        y=[changes["area_a"].first_ndvi, changes["area_b"].first_ndvi],
+        name="2005", marker_color="#AABEA2",
+        text=[f"{changes[k].first_ndvi:.4f}" for k in ("area_a", "area_b")],
+        textposition="outside",
+    ))
+    if year != 2005:
+        before_after.add_trace(go.Bar(
+            x=[AREA_NAMES["area_a"], AREA_NAMES["area_b"]],
+            y=[changes["area_a"].selected_ndvi, changes["area_b"].selected_ndvi],
+            name=str(year), marker_color="#2E7254",
+            text=[f"{changes[k].selected_ndvi:.4f}" for k in ("area_a", "area_b")],
+            textposition="outside",
+        ))
+    before_after.update_layout(
+        barmode="group", height=290, yaxis_title="Annual polygon-mean NDVI",
+        margin=dict(l=10, r=18, t=25, b=15),
+        legend=dict(orientation="h", y=1.14, x=0),
+    )
+    st.plotly_chart(before_after, use_container_width=True)
+    st.caption("Comparison of two observations; not a statistical trend or a causal attribution.")
     a, b = st.columns(2, gap="large")
     with a:
         st.plotly_chart(_chart(series, year, "ndvi", "NDVI", "#2E7254"), use_container_width=True)
@@ -198,7 +302,7 @@ def render(ctx, navigate) -> None:
         st.plotly_chart(_chart(series, year, "rainfall_mm", "Annual rainfall (mm)", "#5083A7"), use_container_width=True)
 
     section_title(
-        "03 / AREA ADVISOR",
+        "04 / AREA ADVISOR",
         "Which area should you choose?",
         "There is no single 'best' area. Select your goal and BLOOM explains the comparison.",
     )
@@ -255,7 +359,7 @@ def render(ctx, navigate) -> None:
             st.write("• " + note)
 
     section_title(
-        "04 / ACTION BRIEF",
+        "05 / ACTION BRIEF",
         "Carry the evidence forward",
         "Download a report explaining the selected area's observations and the advisor recommendation.",
     )
