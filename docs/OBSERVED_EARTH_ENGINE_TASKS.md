@@ -10,7 +10,7 @@
 |---|---|---|---|---|---|
 | `BLOOM_study_areas` | `MHKKZ5L6AZA7IKNPMKNI3G7Q` | Completed | 2026-11-15 03:40:09 +0200 | 2 s | Screenshot shows task expanded |
 | `BLOOM_rainfall_annual` | `RV2ZMQUU4ZHTLSRDFW2250MN` | Completed | 2026-11-15 03:32:16 +0200 | 8 s | Screenshot shows task expanded |
-| `BLOOM_ndvi_annual` | **Not captured yet** | Completion checkmark visible; details not expanded | Unknown | Unknown | Screenshot with expanded task ID required |
+| `BLOOM_ndvi_annual` | `XYDXA2SARYUCONOKY3GF56G7` | Completed | 2026-11-15 01:58:20 +0200 | 3 s | Screenshot shows task expanded, ID and completed phase |
 
 The Earth Engine Code Editor header shows `bloom-514721` as the selected project in the screenshots. This label alone does **not** establish that the three tasks ran under that project, so the export project association remains pending confirmation.
 
@@ -24,7 +24,7 @@ This was a **user-shared local console result**, not an independent rerun by the
 
 ## Remaining evidence to collect without touching the BLOOM site
 
-1. Expand `BLOOM_ndvi_annual` under **Submitted Tasks** and capture the complete task ID, phase, start date/time, and any `Source Script` / `Open in Drive` URLs.
+1. **Completed:** All three task IDs, completed states and displayed start times are recorded from user-supplied screenshots. Confirm their association with the specific original exported files through the task details and corresponding Drive file IDs.
 2. In Earth Engine, open **Source Script** for each task and confirm the script version and original two-polygon `areaA` import. A screenshot of a current unsaved `New Script *` is not sufficient to prove which script was used to export.
 3. Capture the original Drive URLs or file IDs for all three completed exports, and preserve the unmodified exports separately.
 4. Confirm the Earth Engine project used by the actual tasks, not merely the selected project label in the Code Editor header.
