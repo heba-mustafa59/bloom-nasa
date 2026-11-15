@@ -66,7 +66,7 @@ def main() -> None:
         bar = st.container()
 
     with bar:
-        st.markdown(
+        st.html(
             '''
             <div class="bloom-nav-brand">
                 <div class="bloom-nav-logo">
@@ -80,8 +80,7 @@ def main() -> None:
                     EARTH INTELLIGENCE
                 </div>
             </div>
-            ''',
-            unsafe_allow_html=True,
+            '''
         )
 
         links = st.columns(
@@ -118,15 +117,14 @@ def main() -> None:
         )
 
     with st.sidebar:
-        st.markdown(
+        st.html(
             '''
             <div class="bloom-side-head">
                 <span>YOUR RESEARCH SPACE</span>
                 <h3>Investigation<br>controls.</h3>
                 <p>One study, many perspectives.</p>
             </div>
-            ''',
-            unsafe_allow_html=True,
+            '''
         )
 
         st.caption("NAVIGATE")
@@ -195,14 +193,13 @@ def main() -> None:
             "Correlation does not establish causation."
         )
 
-        st.markdown(
+        st.html(
             '''
             <div class="bloom-side-bottom">
                 BLOOM / 2026<br>
                 Evidence before conclusions.
             </div>
-            ''',
-            unsafe_allow_html=True,
+            '''
         )
 
     ctx = load_ui_context(
