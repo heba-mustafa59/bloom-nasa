@@ -6,18 +6,18 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --forest: #163D2E;
-  --deep: #0B2018;
-  --deep2: #102B22;
-  --leaf: #4C8B63;
-  --sage: #B8CFB3;
+  --forest: #1F3018;
+  --deep: #14220F;
+  --deep2: #243A1D;
+  --leaf: #769945;
+  --sage: #C9D7BF;
   --ivory: #F7F6EF;
   --paper: #FEFEFA;
   --brass: #D99A56;
   --sky: #62AFC8;
-  --ink: #18372B;
+  --ink: #233520;
   --muted: #65766C;
-  --line: #DFE4DB;
+  --line: #DCE3D7;
 }
 
 html,
@@ -1051,5 +1051,191 @@ p {
 
   .bloom-section-heading h2 {
     font-size: 1.55rem;
+  }
+}
+
+/* ========================================
+   BLOOM / REFINED INTERFACE
+   A quiet editorial system: forest, olive, warm paper.
+   Presentation-only overrides; no data or chart changes.
+======================================== */
+
+:root {
+  --bloom-focus: #769945;
+  --bloom-shadow: 0 7px 22px rgba(31, 48, 24, .075);
+}
+
+[data-testid="stApp"] {
+  background: #F8F9F5;
+  color: #233520;
+}
+
+[data-testid="stSidebar"] {
+  background: #F2F5ED;
+  border-right: 1px solid #E0E7D9;
+}
+
+.st-key-bloom_topnav {
+  background: rgba(248, 249, 245, .97);
+  border: 1px solid #E0E7D9;
+  border-radius: 13px;
+  box-shadow: var(--bloom-shadow);
+}
+
+.bloom-nav-logo b {
+  color: #1F3018;
+  letter-spacing: -.055em;
+}
+
+.bloom-nav-meta,
+.bloom-nav-logo small {
+  color: #65765C;
+}
+
+.stButton > button,
+.stDownloadButton > button,
+.stFormSubmitButton > button {
+  min-height: 42px;
+  border-radius: 9px;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-size: .89rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  box-shadow: none;
+  transition: background-color .16s ease, border-color .16s ease,
+              box-shadow .16s ease, transform .16s ease;
+}
+
+.stButton > button[kind="primary"],
+.stDownloadButton > button[kind="primary"],
+.stFormSubmitButton > button[kind="primary"],
+.st-key-bloom_topnav .stButton > button[kind="primary"] {
+  background: #1F3018;
+  border: 1px solid #1F3018;
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(31, 48, 24, .12);
+}
+
+.stButton > button[kind="primary"]:hover,
+.stDownloadButton > button[kind="primary"]:hover,
+.stFormSubmitButton > button[kind="primary"]:hover,
+.st-key-bloom_topnav .stButton > button[kind="primary"]:hover {
+  background: #324D25;
+  border-color: #324D25;
+  color: #FFFFFF;
+  box-shadow: 0 5px 13px rgba(31, 48, 24, .14);
+  transform: translateY(-1px);
+}
+
+.stButton > button[kind="secondary"],
+.stDownloadButton > button[kind="secondary"],
+.stFormSubmitButton > button[kind="secondary"] {
+  background: #FFFFFF;
+  border: 1px solid #CDD9C4;
+  color: #284022;
+}
+
+.stButton > button[kind="secondary"]:hover,
+.stDownloadButton > button[kind="secondary"]:hover,
+.stFormSubmitButton > button[kind="secondary"]:hover {
+  background: #F0F5E9;
+  border-color: #769945;
+  color: #1F3018;
+  transform: translateY(-1px);
+}
+
+.st-key-bloom_topnav .stButton > button {
+  border-radius: 8px;
+  min-height: 39px;
+  font-size: .79rem;
+  box-shadow: none;
+}
+
+.st-key-bloom_topnav .stButton > button[kind="secondary"] {
+  background: transparent;
+  border-color: transparent;
+  color: #5D6D56;
+}
+
+.st-key-bloom_topnav .stButton > button[kind="secondary"]:hover {
+  background: #E9F0E3;
+  border-color: #E1EAD8;
+  color: #1F3018;
+}
+
+.stButton > button:focus-visible,
+.stDownloadButton > button:focus-visible,
+.stFormSubmitButton > button:focus-visible,
+[data-baseweb="select"] [tabindex="0"]:focus-visible {
+  outline: 3px solid #769945;
+  outline-offset: 2px;
+}
+
+.stButton > button:disabled,
+.stDownloadButton > button:disabled {
+  opacity: .5;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* Streamlit inputs share one quieter control treatment. */
+[data-testid="stSidebar"] [data-baseweb="select"] > div,
+[data-testid="stMain"] [data-baseweb="select"] > div,
+[data-testid="stMain"] [data-baseweb="input"] > div {
+  border: 1px solid #CBD8C4;
+  border-radius: 9px;
+  background-color: #FFFFFF;
+  box-shadow: none;
+}
+
+[data-testid="stSidebar"] [data-baseweb="select"] > div:hover,
+[data-testid="stMain"] [data-baseweb="select"] > div:hover {
+  border-color: #769945;
+}
+
+[data-testid="stMetric"],
+[data-testid="stPlotlyChart"],
+[data-testid="stExpander"] {
+  border-color: #E1E7DC;
+  border-radius: 11px;
+  box-shadow: 0 3px 16px rgba(31, 48, 24, .035);
+}
+
+.bloom-feature,
+.bloom-stat {
+  box-shadow: 0 4px 18px rgba(31, 48, 24, .04);
+}
+
+.bloom-landing {
+  background: linear-gradient(145deg, #1F3018 0%, #2D4923 68%, #1D3020 100%);
+  box-shadow: 0 16px 38px rgba(21, 37, 17, .12);
+}
+
+.bloom-landing::after,
+.bloom-landing::before {
+  opacity: .5;
+}
+
+.landing-grid {
+  opacity: .4;
+}
+
+.bloom-data-ribbon {
+  border-color: #DCE5D5;
+  background: #EFF4EA;
+}
+
+.bloom-footer {
+  border-top-color: #DCE5D6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stButton > button,
+  .stDownloadButton > button,
+  .stFormSubmitButton > button,
+  .bloom-feature {
+    transition: none;
+    transform: none !important;
   }
 }
