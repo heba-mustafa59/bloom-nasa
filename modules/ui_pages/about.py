@@ -18,7 +18,7 @@ def render(ctx, navigate):
         "of vegetation patterns in Jericho, Palestine."
     )
 
-    st.markdown(
+    st.html(
         '''
         <div class="bloom-editorial-intro about-intro">
             <div class="eyebrow">
@@ -38,8 +38,7 @@ def render(ctx, navigate):
                 irrigation, human activity or any other cause.
             </p>
         </div>
-        ''',
-        unsafe_allow_html=True
+        '''
     )
 
     section_title(
@@ -142,8 +141,10 @@ def render(ctx, navigate):
         "**Integration & Reporting**"
     )
 
-    st.caption(
-        "Data status for your session: Synthetic demonstration"
-        if ctx.is_demo
-        else "Data status for your session: Verified NASA mode"
+    source_label = (
+        "Synthetic demonstration" if ctx.is_demo
+        else "Local CSV research preview · provenance pending"
+        if ctx.mode == "local"
+        else "Verified NASA mode (subject to loader checks)"
     )
+    st.caption(f"Data status for your session: {source_label}")
