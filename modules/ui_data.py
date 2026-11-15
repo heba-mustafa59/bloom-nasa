@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import math
+import json
 
 import pandas as pd
 
@@ -260,6 +261,27 @@ def load_ui_context(
                             "Rainfall cannot be negative"
                         )
 
+            # Display the actual supplied candidate polygons in local preview.
+            # Their presence never certifies NASA export provenance.
+            geojson = {}
+            try:
+                with (folder / "study_areas.geojson").open(encoding="utf-8") as handle:
+                    supplied = json.load(handle)
+                if (
+                    isinstance(supplied, dict)
+                    and supplied.get("type") == "FeatureCollection"
+                    and isinstance(supplied.get("features"), list)
+                    and {
+                        feature.get("properties", {}).get("area_id")
+                        for feature in supplied["features"]
+                        if isinstance(feature, dict)
+                        and isinstance(feature.get("properties"), dict)
+                    } == set(AREA_LABELS)
+                ):
+                    geojson = supplied
+            except (OSError, ValueError, TypeError):
+                pass  # No valid local geography; the map shows an unavailable state.
+
             return UIContext(
                 mode=mode,
                 area_id=area_id,
@@ -267,7 +289,7 @@ def load_ui_context(
                 end_year=end_year,
                 ndvi_df=ndvi,
                 rainfall_df=rain,
-                geojson={},
+                geojson=geojson,
                 metadata={
                     "verification_status": "local_unverified"
                 },
