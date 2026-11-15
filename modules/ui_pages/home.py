@@ -19,10 +19,6 @@ def render(ctx, navigate):
     st.html("""
     <section class="bloom-landing">
 
-        <div class="landing-grid" aria-hidden="true"></div>
-        <div class="landing-orbit orbit-a" aria-hidden="true"></div>
-        <div class="landing-orbit orbit-b" aria-hidden="true"></div>
-
         <div class="landing-top">
             <span>NASA EARTH OBSERVATION</span>
             <span>JORDAN VALLEY / PALESTINE</span>
@@ -31,7 +27,7 @@ def render(ctx, navigate):
         <div class="landing-center">
 
             <div class="landing-kicker">
-                EXPLORING THE UNSEEN STORY OF VEGETATION
+                A JERICHO EARTH OBSERVATION STUDY
             </div>
 
             <h1>
@@ -43,11 +39,11 @@ def render(ctx, navigate):
             </h1>
 
             <p>
-                What does a greener landscape really tell us?
-                <br>
-                Follow twenty years of vegetation and rainfall evidence
+                Explore two study areas in Jericho, compare vegetation
                 <br class="desktop-only">
-                and discover the questions hidden beneath the surface.
+                and rainfall records from 2005–2024, and understand
+                <br class="desktop-only">
+                what the available evidence can — and cannot — explain.
             </p>
 
         </div>
@@ -98,11 +94,10 @@ def render(ctx, navigate):
         </h2>
 
         <p>
-            Satellites can show where the landscape changes.
-            BLOOM goes further — linking NASA vegetation
-            observations with rainfall estimates and careful
-            statistical testing, without mistaking correlation
-            for cause.
+            BLOOM compares vegetation and rainfall across two
+            study areas in Jericho. Our uploaded observations are
+            available for exploration, while independent confirmation
+            of their satellite export provenance is still pending.
         </p>
 
     </section>
