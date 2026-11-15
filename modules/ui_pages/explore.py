@@ -13,6 +13,12 @@ from modules.ui_data import AREA_LABELS
 
 
 def render(ctx, navigate):
+    # Pilot integration uses the exact uploaded polygons and annual CSVs.
+    # Preserve the original Explore design in explicit synthetic demo mode.
+    if not ctx.is_demo:
+        from modules.ui_pages.explore_pilot import render as render_pilot
+        return render_pilot(ctx, navigate)
+
     page_header(
         "01 / THE LANDSCAPE",
         "See the terrain. Understand the context.",
