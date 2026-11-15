@@ -158,6 +158,17 @@ def render(ctx, navigate):
         )
         st.caption(recommendation.explanation)
         report += "\n---\n\n" + advisor_report(data, recommendation)
+        from modules.action_planner import build_action_plan, action_plan_markdown
+        action_plan = build_action_plan(
+            data,
+            recommendation,
+            recommendation.winner or ctx.area_id,
+        )
+        report += "\n---\n\n" + action_plan_markdown(data, action_plan)
+        st.caption(
+            "The downloaded report includes a proposed field-verification and "
+            "monitoring pathway. No intervention or outcome is claimed as verified."
+        )
 
     with st.container(border=True):
         st.markdown(report)
