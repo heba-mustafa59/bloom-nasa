@@ -197,7 +197,7 @@ def style_figure(
 
 
 def ui_footer() -> None:
-    st.markdown(
+    st.html(
         '''
         <footer class="bloom-footer">
             <div class="footer-logo">
@@ -214,5 +214,4 @@ def ui_footer() -> None:
             </small>
         </footer>
         ''',
-        unsafe_allow_html=True,
     )
