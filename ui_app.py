@@ -11,7 +11,7 @@ import streamlit as st
 
 from modules.ui_components import inject_styles, ui_footer, data_label
 from modules.ui_data import AREA_LABELS, load_ui_context
-from modules.ui_pages import home, explore, analytics, mystery, compare, reports, about
+from modules.ui_pages import home, explore, analytics, mystery, compare, reports, about, living_missions
 
 ROOT = Path(__file__).resolve().parent
 
@@ -20,6 +20,7 @@ NAV = [
     ("Explore", explore),
     ("Analytics", analytics),
     ("Mystery Lab", mystery),
+    ("Living Earth Missions", living_missions),
     ("Compare", compare),
     ("Reports", reports),
     ("About", about),
@@ -74,7 +75,7 @@ def main() -> None:
         )
 
         links = st.columns(
-            [1, 1, 1.12, 1.35, 1, 1, 1],
+            [0.75, 0.9, 0.95, 1.2, 2.0, 0.8, 0.8, 0.8],
             gap="small"
         )
 
@@ -130,9 +131,11 @@ def main() -> None:
         st.divider()
         st.caption("DATA SOURCE")
 
+        if "bloom_source" not in st.session_state:
+            st.session_state["bloom_source"] = "Local CSV - Research Preview"
         source = st.radio(
             "Choose data source",
-            ["Synthetic demo", "Verified NASA"],
+            ["Local CSV - Research Preview", "Synthetic demo", "Verified NASA"],
             key="bloom_source",
             label_visibility="collapsed",
             help=(
@@ -141,11 +144,9 @@ def main() -> None:
             ),
         )
 
-        mode = (
-            "demo"
-            if source == "Synthetic demo"
-            else "verified"
-        )
+        mode = {"Synthetic demo": "demo",
+                "Local CSV - Research Preview": "local",
+                "Verified NASA": "verified"}[source]
 
         st.caption("STUDY AREA")
 
